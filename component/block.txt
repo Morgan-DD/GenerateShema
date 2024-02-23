@@ -1,0 +1,48 @@
+client!
+<mxCell id="78fJx9FcZtUnWdpX8Kyn-$id" value="$name" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer.svg;" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="67" height="91" as="geometry" />
+</mxCell>
+|
+server!
+<mxCell id="78fJx9FcZtUnWdpX8Kyn-$id" value="$name" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Server_Desktop.svg;" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="94" height="94" as="geometry" />
+</mxCell>
+|
+trame!
+<mxCell id="JO6ra8xVdiHdVDtEnu3E-$id" value="$name" style="rounded=1;whiteSpace=wrap;html=1;fillStyle=auto;strokeColor=#bbbdbf;fillColor=#bbbdbf;" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="$width" height="20" as="geometry" />
+</mxCell>
+|
+router!
+<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="$name" style="sketch=0;points=[[0.5,0,0],[1,0.5,0],[0.5,1,0],[0,0.5,0],[0.145,0.145,0],[0.8555,0.145,0],[0.855,0.8555,0],[0.145,0.855,0]];verticalLabelPosition=bottom;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.rect;prIcon=router;fillColor=#BBBDBF;" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="70" height="70" as="geometry" />
+</mxCell>
+|
+switch!
+<mxCell id="QErK1Dr_kbtrTpSXSQ54-$id" value="$name" style="sketch=0;points=[[0.015,0.015,0],[0.985,0.015,0],[0.985,0.985,0],[0.015,0.985,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];verticalLabelPosition=bottom;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.rect;prIcon=workgroup_switch;fillColor=#BBBDBF;strokeColor=default;" vertex="1" parent="1">
+	<mxGeometry x="$x" y="$y" width="59" height="59" as="geometry" />
+</mxCell>
+|
+firewall!
+<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="$name" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#BBBDBF;shape=mxgraph.mscae.enterprise.firewall" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="72" height="64" as="geometry" />
+</mxCell>
+|
+wan!
+<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="WAN" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#BBBDBF;fillColor=#BBBDBF;" parent="1" vertex="1">
+	<mxGeometry x="$x" y="$y" width="118" height="79" as="geometry" />
+</mxCell>
+|
+dataArray!
+<mxCell id="517VE_qYMI2_XEnBqmq--$id" value="&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;Utilisateur UPN: $user&lt;br&gt;Nom user UPN: $name&lt;br&gt;Prenom user UPN: $firstName&lt;br&gt;nom affiché: $displayName&lt;br&gt;&lt;/font&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;email: $email&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#BBBDBF;align=left;" vertex="1" parent="1">
+	<mxGeometry y="$y" width="220" height="139" as="geometry" />
+</mxCell>
+|
+link!
+<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#BBBDBF;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" edge="1">
+	<mxGeometry width="50" height="50" relative="1" as="geometry">
+		<mxPoint x="$xStart" y="$yStart" as="sourcePoint" />
+		<mxPoint x="$xEnd" y="$yEnd" as="targetPoint" />
+		<mxPoint as="offset" />
+	</mxGeometry>
+</mxCell>
