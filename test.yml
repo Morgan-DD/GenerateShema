@@ -1,0 +1,17 @@
+srv_name: 'AZA-FC'              # Nom Proxmox du serveur, 
+cli_name: 'AZA-FCClient'            # Nom du client,
+bridge_name: Bridge41               # ID du nomveau reseau,
+bridge_comment: "This is a bridge"        # Nom du nouveua reseau a crer,
+bridge_netid: "167.19.1"         # NetID du reseau,
+dc_hostname: 'DC02'                # Nom NetBios du serveur,
+domain_name: 'Domain.local'       # Nom du domaine,
+domain_admin_password: 'Pa$$w0rd' # Admin password,
+recovery_password: 'Pa$$w0rd'     # AD recovery password,
+rt_name: 'VT-C003-RT4'            # Nom du routeur MikrotikX
+
+upn: ted                          # User UPN,
+firstname: Jarry             # First name,
+surname: Terance                  # surname,
+display_name: Mr. Ted Johns       # display name,
+user_password: 'Pa$$w0rd'         # User password,
+email: "Hommer.Simpson@Land.TV" # email de la personne a contacter pour envoyer les info
