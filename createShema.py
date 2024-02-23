@@ -69,7 +69,7 @@ def matchingError(id, value):
                         ["bridge_comment","Le commentaire de votre pont n'est pas juste, il doit etre comme ceci:","This is a bridge, lanlanla, 007,  lanAlone, lan12345"],
                         ["bridge_netid","Le netid de votre pont n'est pas juste, il doit etre comme ceci:","167.19.1, 199.0.1, 254.244.245,  1.1.1, 8.8.8"],
                         ["dc_hostname","Le Nom de votre DC n'est pas juste, il doit etre comme ceci:","DC02, DC1000000000000, dc302,  dcD1, dc489c"],
-                        ["domain_name","Le Nom de votre domaine n'est pas juste, il doit etre comme ceci:","Domain.local, domain.local, google.com,  MyDomain1.a, a.a"],
+                        ["domain_name","Le Nom de votre domaine n'est pas juste, il doit etre comme ceci:","domain.local, domain.local, google.com,  mydomain1.a, a.a"],
                         ["rt_name","Le Nom de votre routeur n'est pas juste, il doit etre comme ceci:","VT-C003-RT4, RV-b003-rt04, la-p100t-RT5,  BA-B100C-RT24, VS-A103-RT90"],
                         ["upn","Le Nom de votre utilisateur UPN n'est pas juste, il doit etre comme ceci:","ted, IAmTheUser, USERNAmeCool3,  upnUserName, 1-user-2"],
                         ["firstname","Le Nom n'est pas juste, il doit etre comme ceci:","HelloWorld, Rochat, Skywawllker,  nom, thatsAName"],
