@@ -8,27 +8,37 @@ Le Script peut tourner sur une machine windows 10 et une machine ubuntu 22.xx, a
 #### `Le Schema apres le script :`
 ![shema2](imageForReadMe/aprecu2.png)
 
-# Fonctionnement:
+# Fichiers
 
-Le script va récupèrer les données dans le fichier `*.yml` qui doit être dans le même répértoire que le script.
+script python  
+![script](imageForReadMe/script.png)
 
+fichier contenant les donées à ajouter dans le schema  
 ![yml](imageForReadMe/yml.png)
 
-Si le script ne trouve pas de fichier `*.yml` il va afficher ce message d'erreur :
+dossier contenant des fichiers `.txt` servant à la génération du schema  
+![component](imageForReadMe/component.png)
+![txtFiles](imageForReadMe/txtFiles.png)
+
+# Fonctionnement
+
+Le script va récupèrer les données dans le fichier `*.yml` qui doit être dans le même répértoire que le script.  
+![yml](imageForReadMe/yml.png)
+
+Si le script ne trouve pas de fichier `*.yml` il va afficher ce message d'erreur :  
 ![errorNoYml](imageForReadMe/errorNoYml.png)
 
 ---
 
-Le fichier yml à ce format:
+Le fichier yml à ce format:  
 ![ymlContent](imageForReadMe/ymlContent.png)
 
 ---
 
 Le script verifier les donées et si elle convienne à des paramètres
 
-Si une des valeurs ne respecte pas les regles un message d'erreur sera affiché:
+Si une des valeurs ne respecte pas les regles un message d'erreur sera affiché:  
 ![errorymlContent](imageForReadMe/errorymlContent.png)
 
-Quand tout ça est fini le fichier .drawio est généré et déposé sur le bureau.
-
+Quand tout ça est fini le fichier .drawio est généré et déposé sur le bureau.  
 ![drawIoFile](imageForReadMe/drawIoFile.png)
