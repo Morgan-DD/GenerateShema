@@ -2,10 +2,10 @@
 Le but est de créer un simple script qui récupère des données dans un fichier `.yml` et les met sur un schema `drawIo`.  
 Le Script peut tourner sur une machine windows 10 et une machine ubuntu 22.xx, avec l'interpreteur python.
 
-#### `Le Schema avant le script :`
+#### `Le Schema sans les données :`
 ![shema1](imageForReadMe/aprecu1.png)
 ---
-#### `Le Schema apres le script :`
+#### `Le Schema avec les donées :`
 ![shema2](imageForReadMe/aprecu2.png)
 
 # Fichiers
