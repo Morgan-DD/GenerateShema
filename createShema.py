@@ -142,6 +142,7 @@ def createLink(id, x, y, width, height, margin, linkBlock, linkid):
             startY = y +1
             finalX = startX
             finalY = y- margin -1
+#            commentLink()
         case "firewall":#si c'est un firewall -> routeur
             startX = x + (width/2)
             startY = y +1
@@ -160,6 +161,53 @@ def createLink(id, x, y, width, height, margin, linkBlock, linkid):
     linkBlock = linkBlock.replace("$yEnd", str(finalY))#id de la fin de la liaison(y)
     return linkBlock
 
+# methode qui crée un lien entre 2 composants avec un commentaire
+def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, commentBlock, comment):
+    match id:
+        case "srv_name":#si c'est un serveur -> trame reseau
+            startX = x + (width/2)
+            startY = y + height - 10
+            finalX =  startX
+            finalY = y + height + margin + 10
+        case "cli_name":#si c'est un clien -> trame reseau
+            startX = x + (width/2)
+            startY = y + height - 10
+            finalX = startX
+            finalY = y + height + margin + 10
+        case "rt_name":#si c'est un routeur -> trame reseau
+            startX = x + (width/2)
+            startY = y +1
+            finalX = startX
+            finalY = y- margin -1
+#            commentLink()
+        case "firewall":#si c'est un firewall -> routeur
+            startX = x + (width/2)
+            startY = y +1
+            finalX = startX
+            finalY = y- margin -1
+        case "wan":#si c'est le wan -> firewall
+            startX = x + (width/2)
+            startY = y + 10
+            finalX = startX
+            finalY = y- margin -1
+            linkid="CPNV"
+    linkBlock = linkBlock.replace("$id", str(linkid))#id de la liaison
+    linkBlock = linkBlock.replace("$xStart", str(startX))#id du début de la liaison(x) 
+    linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
+    linkBlock = linkBlock.replace("$xEnd", str(finalX))#id de la fin de la liaison(x) 
+    linkBlock = linkBlock.replace("$yEnd", str(finalY))#id de la fin de la liaison(y)
+    linkBlock = linkBlock + commentLink(comment,0,-3, linkid, linkid+1, commentBlock)
+    return linkBlock
+
+def commentLink(comment, x, y, linkid, id, commentBlock):
+    print("linkId: " + str(linkid))
+    print("ID: " + str(id))
+    linkComment = commentBlock.replace("$id", str(id))#id de la liaison
+    linkComment = linkComment.replace("$commentaire", str(comment))#id de 
+    linkComment = linkComment.replace("$LinkedTo", str(linkid))#id de 
+    linkComment = linkComment.replace("$x", str(x))#id de la fin de la liaison(x) 
+    linkComment = linkComment.replace("$y", str(y))#id de la fin de la liaison(y)
+    return linkComment
 # methode qui génére le shema reseau graçe aux données récupérée et transmises
 #values = valeurs des forme et leur id
 #x = position x de la forme
@@ -223,7 +271,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 # on augmente l'id pour eviter des bugs
                 id = id+1
                 # on crée la liaison qui relie le client à la trame
-                linksList = linksList+ createLink("cli_name", x, y,clientSize[0], clientSize[1], margin, linkBlock, id)
+                linksList = linksList + createLink("cli_name", x, y,clientSize[0], clientSize[1], margin, linkBlock, id)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
             # si c'est la trame
@@ -245,9 +293,11 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 shemaContent = shemaContent + replaceDataOnComponent(coponent[1], (getValueOnFileContent("rt_name", values))[1], x, y, id)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
-                linksList = linksList+ createLink("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id)
+                linksList = linksList+ createLinkWithComment("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".1")
+                print("router: " + str())
+                print((coponents[-2].split("!"))[1])
                 # on augmente l'id pour eviter des bugs
-                id = id+1
+                id = id+2
             # si c'est le firewall
             case "firewall":
                 """
