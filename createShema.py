@@ -200,8 +200,6 @@ def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, co
     return linkBlock
 
 def commentLink(comment, x, y, linkid, id, commentBlock):
-    print("linkId: " + str(linkid))
-    print("ID: " + str(id))
     linkComment = commentBlock.replace("$id", str(id))#id de la liaison
     linkComment = linkComment.replace("$commentaire", str(comment))#id de 
     linkComment = linkComment.replace("$LinkedTo", str(linkid))#id de 
@@ -281,7 +279,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 y = (serverSize[1] + marginTop + margin)
                 text = str((getValueOnFileContent("bridge_name", values))[1]) + " | " + str((getValueOnFileContent("bridge_comment", values))[1]) + " | "  + str((getValueOnFileContent("bridge_netid", values))[1]) + ".0/24"
                 # on modifie le paterne en ajoutant nos donées
-                shemaContent = shemaContent + replaceDataOnComponent(coponent[1], text , x, y, id)
+                shemaContent = shemaContent + replaceDataOnComponent(coponent[1], text , 0, y, id)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
             # si c'est le routeur
@@ -294,8 +292,6 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 # on augmente l'id pour eviter des bugs
                 id = id+1
                 linksList = linksList+ createLinkWithComment("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".1")
-                print("router: " + str())
-                print((coponents[-2].split("!"))[1])
                 # on augmente l'id pour eviter des bugs
                 id = id+2
             # si c'est le firewall
