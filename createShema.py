@@ -4,7 +4,7 @@
 #   But du script:          Le script sert à créer un shema reseau graçe à des donnée vennant d'un fichier yml et à verifier si les données du fichier sont justes et tout ça sur un serveur ubuntu
 #   
 #   notes supp:             compatible sur windows(10) et ubuntu(22.04.4 LTS) pour l'instant
-#   version:                version 1.0    
+#   version:                version 1.1 
 import shutil
 import platform
 import os
@@ -196,7 +196,7 @@ def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, co
     linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
     linkBlock = linkBlock.replace("$xEnd", str(finalX))#id de la fin de la liaison(x) 
     linkBlock = linkBlock.replace("$yEnd", str(finalY))#id de la fin de la liaison(y)
-    linkBlock = linkBlock + commentLink(comment,0,-3, linkid, linkid+1, commentBlock)
+    linkBlock = linkBlock + commentLink(comment,0,-3, linkid, linkid+1, commentBlock)#commentaire du lien
     return linkBlock
 
 def commentLink(comment, x, y, linkid, id, commentBlock):
@@ -206,6 +206,7 @@ def commentLink(comment, x, y, linkid, id, commentBlock):
     linkComment = linkComment.replace("$x", str(x))#id de la fin de la liaison(x) 
     linkComment = linkComment.replace("$y", str(y))#id de la fin de la liaison(y)
     return linkComment
+
 # methode qui génére le shema reseau graçe aux données récupérée et transmises
 #values = valeurs des forme et leur id
 #x = position x de la forme
@@ -294,7 +295,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 linksList = linksList+ createLinkWithComment("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".1")
                 # on augmente l'id pour eviter des bugs
                 id = id+2
-            # si c'est le firewall
+            # si c'est le firewall (pas utilisé)
             case "firewall":
                 """
                 # on le met sous le router
@@ -362,91 +363,106 @@ def shemaGenerate(values, x, y, id, baseFileValue):
     # on ferme le fichier
     file.close
 
-my_file = sys.argv[1]
-
-#position x actuelle formes dans sur le schema
-actualX = 25
-#position y actuelle des formes dans sur le schema
-actualY = 25
-#id actuelle des formes dans sur le schema
-actualId = 0
-
-# liste des clé et le regex que leurs valeurs doivent respecter
-checkValueArray = [["srv_name",r"^.{1,15}$"],
-                   ["cli_name",r".{1,15}"],
-                   ["bridge_name",r"^.{1,8}$"],
-                   ["bridge_comment",r"^.{1,8}$"],
-                   ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
-                   ["dc_hostname",r"^.{1,15}$"],
-                   ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
-                   ["domain_admin_password",r"^.{1,20}$"],
-                   ["recovery_password",r"^.{1,20}$"],
-                   ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}([A-z]?)-[A-z]{2}[0-9]{2}"],
-                   ["upn",r"^.{1,15}$"],
-                   ["firstname",r"^.{1,15}$"],
-                   ["surname",r"^.{1,15}$"],
-                   ["display_name",r"^.{1,20}$"],
-                   ["user_password",r"^.{1,20}$"],
-                   ["email",r".*@[a-z0-9.-]*"],]
-
-# nom du fichier drawio final 
-destination = "aprecu.drawio"
-
-# test pour savoir si on est sur windows ou pas
-index = (platform.system().lower()).find("windows")
-
-pathFormat = "/"
-
-# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
-if index >= 0:
-    pathFormat = "\\"
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+if(len(sys.argv) < 2):
+    print("veuillez indiquer le chemin du fichier .yml en paramètre")
 else:
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
+    my_file = sys.argv[1]
+    N = 4
+    # get length of string
+    length = len(my_file)
+    # create a new string of last N characters
+    Str2 = my_file[length - N:]
+    # print Last 4 characters
+    if(Str2 != ".yml"):
+        print("le fichier que vous avez passé en paramètre n'est pas un fichier .yml")  
+        print("veuillez renseigner le chemin du fichier .yml en paramètre")
+    elif(not os.path.isfile(my_file)):
+        print("le chemin qu vous avez passé en paramètre n'existe pas") 
+        print("veuillez renseigner le chemin du fichier .yml en paramètre")
+    else:
+        #position x actuelle formes dans sur le schema
+        actualX = 25
+        #position y actuelle des formes dans sur le schema
+        actualY = 25
+        #id actuelle des formes dans sur le schema
+        actualId = 0
+
+        # liste des clé et le regex que leurs valeurs doivent respecter
+        checkValueArray = [["srv_name",r"^.{1,15}$"],
+                        ["cli_name",r".{1,15}"],
+                        ["bridge_name",r"^.{1,8}$"],
+                        ["bridge_comment",r"^.{1,8}$"],
+                        ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
+                        ["dc_hostname",r"^.{1,15}$"],
+                        ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
+                        ["domain_admin_password",r"^.{1,20}$"],
+                        ["recovery_password",r"^.{1,20}$"],
+                        ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}([A-z]?)-[A-z]{2}[0-9]{2}"],
+                        ["upn",r"^.{1,15}$"],
+                        ["firstname",r"^.{1,15}$"],
+                        ["surname",r"^.{1,15}$"],
+                        ["display_name",r"^.{1,20}$"],
+                        ["user_password",r"^.{1,20}$"],
+                        ["email",r".*@[a-z0-9.-]*"],]
+
+        # nom du fichier drawio final 
+        destination = "aprecu.drawio"
+
+        # test pour savoir si on est sur windows ou pas
+        index = (platform.system().lower()).find("windows")
+
+        pathFormat = "/"
+
+        # on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
+        if index >= 0:
+            pathFormat = "\\"
+            descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+        else:
+            descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
 
 
-script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+        script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-#chemin du fichier qui contient la base du schema
-baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
-#chemin du fichier qui contient les différents paterns
-coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
+        #chemin du fichier qui contient la base du schema
+        baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
+        #chemin du fichier qui contient les différents paterns
+        coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
 
-# copie du fichier de base sur le bureau
-shutil.copyfile(baseFilepath, descktopPath)
+        # copie du fichier de base sur le bureau
+        shutil.copyfile(baseFilepath, descktopPath)
 
-# on copie le contenu de se fichier
-baseFileValue = open(descktopPath).read()
+        # on copie le contenu de se fichier
+        baseFileValue = open(descktopPath).read()
 
-# on test si il y a un fichier .yml dans le repertoire
-if(len(my_file) <= 0):
-    # si non on affiche un message d'erreur
-    print("veuilliez ajouter un fichier .yml à coté du script")
-else:
-    #si oui on commence le script
+        # on test si il y a un fichier .yml dans le repertoire
+        if(my_file == ""):
+            # si non on affiche un message d'erreur
+            print("veuilliez ajouter un fichier .yml à coté du script")
+        else:
+            #si oui on commence le script
 
-    # tableau contenant la liste des donée erronées
-    errorArray = []
-    #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
-    keyValueArray = []
-    # on recupère le contenu du fichier .yml qu'on a trouvé
-    fileContent = open(my_file).read()
-    # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
-    fileContent = fileContent.split("\n")
-    # on passe par chaque case du tableau
-    for line in fileContent:
-        # si la case est pas vide (ligne vide ou fausse)
-        if((line.split('#'))[0] != ""):
-            # on edit notre clé et notre valeur pour les rendre fonctionelles
-            lineValue = ((line.split('#'))[0].split(':'))[1].lstrip().rstrip()
-            lineKey = ((line.split('#'))[0].split(':'))[0].lstrip().rstrip()
-            # on "nettoye notre valeur"
-            lineValue = CleanString(lineValue)
-            # on met notre clé et notre valeur dans un tableau temporaire
-            KeyValueArrayTemp = [lineKey, lineValue]
-            # on ajoute ce tableau temporaire à notre tableau principal
-            keyValueArray.append(KeyValueArrayTemp)
-        del line
+            # tableau contenant la liste des donée erronées
+            errorArray = []
+            #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
+            keyValueArray = []
+            # on recupère le contenu du fichier .yml qu'on a trouvé
+            fileContent = open(my_file).read()
+            # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
+            fileContent = fileContent.split("\n")
+            # on passe par chaque case du tableau
+            for line in fileContent:
+                # si la case est pas vide (ligne vide ou fausse)
+                if((line.split('#'))[0] != ""):
+                    # on edit notre clé et notre valeur pour les rendre fonctionelles
+                    lineValue = ((line.split('#'))[0].split(':'))[1].lstrip().rstrip()
+                    lineKey = ((line.split('#'))[0].split(':'))[0].lstrip().rstrip()
+                    # on "nettoye notre valeur"
+                    lineValue = CleanString(lineValue)
+                    # on met notre clé et notre valeur dans un tableau temporaire
+                    KeyValueArrayTemp = [lineKey, lineValue]
+                    # on ajoute ce tableau temporaire à notre tableau principal
+                    keyValueArray.append(KeyValueArrayTemp)
+                del line
 
-    # ici on genère le shema du reseau
-    shemaGenerate(keyValueArray, actualX, actualY, actualId, baseFileValue)
+            # ici on genère le shema du reseau
+            shemaGenerate(keyValueArray, actualX, actualY, actualId, baseFileValue)

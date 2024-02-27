@@ -5,8 +5,6 @@
 #   
 #   notes supp:             compatible sur windows(10) et ubuntu(22.04.4 LTS) pour l'instant
 #   version:                version 1.0    
-import shutil
-import platform
 import os
 import glob
 import sys
@@ -41,35 +39,6 @@ checkValueArray = [["srv_name",r"^.{1,15}$"],
                    ["display_name",r"^.{1,20}$"],
                    ["user_password",r"^.{1,20}$"],
                    ["email",r".*@[a-z0-9.-]*"],]
-
-# nom du fichier drawio final 
-destination = "aprecu.drawio"
-
-# test pour savoir si on est sur windows ou pas
-index = (platform.system().lower()).find("windows")
-
-pathFormat = "/"
-
-# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
-if index >= 0:
-    pathFormat = "\\"
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
-else:
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
-
-
-script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-
-#chemin du fichier qui contient la base du schema
-baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
-#chemin du fichier qui contient les différents paterns
-coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
-
-# copie du fichier de base sur le bureau
-shutil.copyfile(baseFilepath, descktopPath)
-
-# on copie le contenu de se fichier
-baseFileValue = open(descktopPath).read()
 
 # on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
 script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
