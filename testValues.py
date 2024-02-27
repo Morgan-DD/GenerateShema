@@ -1,0 +1,123 @@
+#   createur:               Morgan Dussault
+#   Date de creation:       27.02.2024
+#   
+#   But du script:          Le script sert à tester les valeurs du fichier et si elles ne respectent pas les règle alors cela retourne False sinon ça retourne True
+#   
+#   notes supp:             compatible sur windows(10) et ubuntu(22.04.4 LTS) pour l'instant
+#   version:                version 1.0    
+import shutil
+import platform
+import os
+import glob
+import sys
+import re
+
+# méthode servant à nettoyer une string de ses caractère tel que ["] et [']
+#string = une string
+def CleanString(string):
+    if string[0] == "'" or string[0] == "\"":
+        string = string[1:]
+    if string[len(string)-1] == "'" or string[len(string)-1] == "\"":
+        string = string[:-1]
+    return string.replace("\n", "")
+
+def testRegexValue(regex, value):
+    return bool(re.match(regex, value))
+
+# liste des clé et le regex que leurs valeurs doivent respecter
+checkValueArray = [["srv_name",r"^.{1,15}$"],
+                   ["cli_name",r".{1,15}"],
+                   ["bridge_name",r"^.{1,8}$"],
+                   ["bridge_comment",r"^.{1,8}$"],
+                   ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
+                   ["dc_hostname",r"^.{1,15}$"],
+                   ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
+                   ["domain_admin_password",r"^.{1,20}$"],
+                   ["recovery_password",r"^.{1,20}$"],
+                   ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}-[A-z]{2}[0-9]"],
+                   ["upn",r"^.{1,15}$"],
+                   ["firstname",r"^.{1,15}$"],
+                   ["surname",r"^.{1,15}$"],
+                   ["display_name",r"^.{1,20}$"],
+                   ["user_password",r"^.{1,20}$"],
+                   ["email",r".*@[a-z0-9.-]*"],]
+
+# nom du fichier drawio final 
+destination = "aprecu.drawio"
+
+# test pour savoir si on est sur windows ou pas
+index = (platform.system().lower()).find("windows")
+
+pathFormat = "/"
+
+# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
+if index >= 0:
+    pathFormat = "\\"
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+else:
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
+
+
+script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+#chemin du fichier qui contient la base du schema
+baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
+#chemin du fichier qui contient les différents paterns
+coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
+
+# copie du fichier de base sur le bureau
+shutil.copyfile(baseFilepath, descktopPath)
+
+# on copie le contenu de se fichier
+baseFileValue = open(descktopPath).read()
+
+# on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
+script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+os.chdir(script_folder_path)
+my_files = glob.glob('*.yml')
+
+# on test si il y a un fichier .yml dans le repertoire
+if(len(my_files) <= 0):
+    # si non on affiche un message d'erreur
+    print("veuilliez ajouter un fichier .yml à coté du script")
+else:
+    #si oui on commence le script
+
+    # tableau contenant la liste des donée erronées
+    errorArray = []
+    #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
+    keyValueArray = []
+    # on recupère le contenu du fichier .yml qu'on a trouvé
+    fileContent = open(my_files[0]).read()
+    # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
+    fileContent = fileContent.split("\n")
+    # on passe par chaque case du tableau
+    for line in fileContent:
+        # si la case est pas vide (ligne vide ou fausse)
+        if((line.split('#'))[0] != ""):
+            # on edit notre clé et notre valeur pour les rendre fonctionelles
+            lineValue = ((line.split('#'))[0].split(':'))[1].lstrip().rstrip()
+            lineKey = ((line.split('#'))[0].split(':'))[0].lstrip().rstrip()
+            # on "nettoye notre valeur"
+            lineValue = CleanString(lineValue)
+            # on met notre clé et notre valeur dans un tableau temporaire
+            KeyValueArrayTemp = [lineKey, lineValue]
+            # on ajoute ce tableau temporaire à notre tableau principal
+            keyValueArray.append(KeyValueArrayTemp)
+        del line
+
+    # on passe dans le tableau crée juste en dessu
+    for i in range(len(keyValueArray)):
+        for regex in checkValueArray:
+            # on regarde si notre valeur respecte le regex
+            if regex[0] == keyValueArray[i][0]:
+                testRegex = testRegexValue(regex[1], keyValueArray[i][1])
+                testRegex = not testRegex
+                # si c'est pas le cas on l'ajoute à un tableau des erreurs
+                if (testRegex):
+                    errorArray.append(keyValueArray[i])
+
+    if(len(errorArray) > 0):
+        print(False)
+    else:
+        print(True)

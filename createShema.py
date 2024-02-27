@@ -362,6 +362,8 @@ def shemaGenerate(values, x, y, id, baseFileValue):
     # on ferme le fichier
     file.close
 
+my_file = sys.argv[1]
+
 #position x actuelle formes dans sur le schema
 actualX = 25
 #position y actuelle des formes dans sur le schema
@@ -416,13 +418,8 @@ shutil.copyfile(baseFilepath, descktopPath)
 # on copie le contenu de se fichier
 baseFileValue = open(descktopPath).read()
 
-# on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
-script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-os.chdir(script_folder_path)
-my_files = glob.glob('*.yml')
-
 # on test si il y a un fichier .yml dans le repertoire
-if(len(my_files) <= 0):
+if(len(my_file) <= 0):
     # si non on affiche un message d'erreur
     print("veuilliez ajouter un fichier .yml à coté du script")
 else:
@@ -433,7 +430,7 @@ else:
     #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
     keyValueArray = []
     # on recupère le contenu du fichier .yml qu'on a trouvé
-    fileContent = open(my_files[0]).read()
+    fileContent = open(my_file).read()
     # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
     fileContent = fileContent.split("\n")
     # on passe par chaque case du tableau
@@ -450,22 +447,6 @@ else:
             # on ajoute ce tableau temporaire à notre tableau principal
             keyValueArray.append(KeyValueArrayTemp)
         del line
-
-    # on passe dans le tableau crée juste en dessu
-    for i in range(len(keyValueArray)):
-        for regex in checkValueArray:
-            # on regarde si notre valeur respecte le regex
-            if regex[0] == keyValueArray[i][0]:
-                testRegex = testRegexValue(regex[1], keyValueArray[i][1])
-                testRegex = not testRegex
-                # si c'est pas le cas on l'ajoute à un tableau des erreurs
-                if (testRegex):
-                    errorArray.append(keyValueArray[i])
-
-    # on passe dans le tableau des erreurs crée juste en dessu
-    for error in errorArray:
-        # on affiche le message d'erreur lié à l'erreur
-        matchingError(error[0], error[1])
 
     # ici on genère le shema du reseau
     shemaGenerate(keyValueArray, actualX, actualY, actualId, baseFileValue)
