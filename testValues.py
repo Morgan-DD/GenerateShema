@@ -23,22 +23,24 @@ def testRegexValue(regex, value):
     return bool(re.match(regex, value))
 
 # liste des clé et le regex que leurs valeurs doivent respecter
-checkValueArray = [["srv_name",r"^.{1,15}$"],
+checkValueArray = [["daysuse",r"^[0-9]{1,2}$"],
+                   ["project_name",r"^.{1,15}$"],
+                   ["srv_name",r"^.{1,15}$"],
                    ["cli_name",r".{1,15}"],
-                   ["bridge_name",r"^.{1,8}$"],
-                   ["bridge_comment",r"^.{1,8}$"],
+                   ["srvappl_name",r"^.{1,15}$"],
                    ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
-                   ["dc_hostname",r"^.{1,15}$"],
                    ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
                    ["domain_admin_password",r"^.{1,20}$"],
                    ["recovery_password",r"^.{1,20}$"],
-                   ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}-[A-z]{2}[0-9]"],
+                   ["rt_name",r"^[A-z]{2}-[A-z][0-9]{3}-[A-z]{2}[0-9]$"],
                    ["upn",r"^.{1,15}$"],
                    ["firstname",r"^.{1,15}$"],
                    ["surname",r"^.{1,15}$"],
                    ["display_name",r"^.{1,20}$"],
                    ["user_password",r"^.{1,20}$"],
-                   ["email",r".*@[a-z0-9.-]*"],]
+                   ["email",r".*@[a-z0-9.-]*"],
+                   ["bridge_id",r"^[0-9]{1,2}$"],
+                   ["wan_ip",r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"],]
 
 # on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
 script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -79,7 +81,7 @@ else:
     for i in range(len(keyValueArray)):
         for regex in checkValueArray:
             # on regarde si notre valeur respecte le regex
-            if regex[0] == keyValueArray[i][0]:
+            if regex[0] == keyValueArray[i][0] and keyValueArray[i][1] != False:
                 testRegex = testRegexValue(regex[1], keyValueArray[i][1])
                 testRegex = not testRegex
                 # si c'est pas le cas on l'ajoute à un tableau des erreurs

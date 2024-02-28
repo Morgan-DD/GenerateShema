@@ -5,8 +5,19 @@ Le Script peut tourner sur une machine windows 10 et une machine ubuntu 22.xx, a
 #### `Le Schema sans les données :`
 ![shema1](imageForReadMe/aprecu1.png)
 ---
-#### `Le Schema avec les donées :`
+
+#### `Le Schema avec les donées et srvappl_name = false:`  
+
+![shema2](imageForReadMe/srvapplFalse.png)  
+
 ![shema2](imageForReadMe/aprecu2.png)
+---
+
+#### `Le Schema avec les donées et srvappl_name = false:`  
+
+![shema2](imageForReadMe/srvapplData.png)  
+
+![shema2](imageForReadMe/aprecu3.png)
 
 # Fichiers
 
@@ -70,3 +81,78 @@ Le fichier yml à ce format:
 
 Quand tout ça est fini le fichier .drawio est généré et déposé sur le bureau.  
 ![drawIoFile](imageForReadMe/drawIoFile.png)
+
+# Règles fonctionnement du fichier yml
+
+>`daysuse:` nombre de jour d'utilisation, nombre à 1 ou 2 digits.  
+Ex: `1,64,26,92,9,41,76,`
+---
+
+>`project_name:` nom du projet, 15 caractères de long.  
+Ex: `SuperProject129, MyProject, 4120, Pr0jEcTaRt`  
+---
+
+>`srvappl_name:` nom du serveur aplicatif, 15 caractères de long.  
+Ex: `APServer10, S04, MonAplication, ServerAp5, Tetrice`  
+Il est aussi possible de mettre `false` et donc le serveur ne sera pas affiché
+---
+
+>`srv_name:` nom du serveur, 15 caractères de long.  
+Ex: `MyServer, SRV39, SB-SRV1, Server, WindowsSrv01`
+---
+
+>`cli_name:` nom de la machine client, 15 caractères de long.     
+Ex: `Cli24, MyClient2, Windows11-01, SB-Cli-46`
+---
+
+>`bridge_netid:` netId du sous reseau, 1byte.1byte.1byte.   
+Ex: `182.10.1, 1.1.1, 90.255.255, 1.2.3, 8.8.8`
+---
+
+>`domain_name:` nom de votre domaine, domain.tlc.    
+Ex: `myDomain.us, domain.local, google.de, domain.expansion` 
+---
+
+>`domain_admin_password:` mot de passe admin, 20 caractères de long.    
+Ex: `Password, 1245678, drowssaP, MyPassword, P_s_w_r_` 
+---
+
+>`recovery_password:` mot de passe de secour, 20 caractères de long.    
+Ex: `Password, 1245678, drowssaP, MyPassword, P_s_w_r_` 
+---
+
+>`rt_name:`nom du routeur, 2 lettres - 1 lettre(non obligatoire) 3 nombres - 2 lettres 1 nombre.   
+Ex: `AB-C007-DE0, PO-K302-AL1, BA-M500-AA0, KF-K392-OP1` 
+---
+
+>`upn:` nom de l'utilisateur UPN, 15 caractères de long.    
+Ex: `name, UpnUser, MyUpn, AbCdEfGhIjKlMnO` 
+---
+
+>`firstname:` prenom, 15 caractères de long.     
+Ex: `Jhon, Axel, Carl,  Linus` 
+---
+
+>`surname:` nom, 15 caractères de long.     
+Ex: `Cena, Portgas, Marks, Torvald` 
+---
+
+>`display_name:` nom affiché de l'utilisateur, 15 caractères de long.     
+Ex: `Mister X, SuperUser, Kapata, Atcom ` 
+---
+
+>`user_password:` mot de passe de l'utilisateur, 20 caractères de long.      
+Ex: `Password, 1245678, drowssaP, MyPassword, P_s_w_r_` 
+---
+
+>`email:` email de l'utilisateur, format de mail(XXX@XXX.XXX).   
+Ex: `SpongeBob@Ocean.Ki, Albus@bus.sus, Chair@land.TV` 
+---
+
+>`bridge_id` id du bridge vmbrX, 1-2 chiffres.
+Ex: `1, 5, 10, 58` 
+---
+ 
+>`wan_ip` ip du routeur coté WAN, format ip (1byte.1byte.1byte.1byte).   
+Ex: `8.8.8.8, 182.103.02.1, 219.12.39.1, 169.254.254.47` 
+---

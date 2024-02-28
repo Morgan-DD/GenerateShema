@@ -12,6 +12,37 @@ import glob
 import sys
 import re
 
+ymlFilePath = sys.argv[1]
+N = 4
+
+# nom du fichier drawio final 
+destination = "aprecu.drawio"
+
+# test pour savoir si on est sur windows ou pas
+index = (platform.system().lower()).find("windows")
+
+pathFormat = "/"
+
+# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
+if index >= 0:
+    pathFormat = "\\"
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+else:
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
+
+#dossier ou ce trouve le script
+script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+#chemin du fichier qui contient la base du schema
+baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
+#chemin du fichier qui contient les différents paterns
+coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
+
+# tableau contenant la liste des donée erronées
+errorArray = []
+#tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
+keyValueArray = []
+
 # méthode servant à nettoyer une string de ses caractère tel que ["] et [']
 #string = une string
 def CleanString(string):
@@ -114,7 +145,7 @@ def replaceDataOnComponent(component, name, x, y, id):
 #displayName = nom affiché de l'utilisateur
 #email = email
 #y = position y de la forme
-def replaceDataOnSquare(component, id, user, name, firstName, displayName,email, y):
+def replaceDataOnSquare(component, id, user, name, firstName, displayName,email, y,domainName):
     component = component.replace("$id", str(id))
     component = component.replace("$user", str(user))
     component = component.replace("$name", str(name))
@@ -122,6 +153,7 @@ def replaceDataOnSquare(component, id, user, name, firstName, displayName,email,
     component = component.replace("$displayName", str(displayName))
     component = component.replace("$email", str(email))
     component = component.replace("$y", str(y))
+    component = component.replace("$domainName", str(domainName))
     return component
 
 # methode qui crée un lien entre 2 composants
@@ -153,7 +185,6 @@ def createLink(id, x, y, width, height, margin, linkBlock, linkid):
             startY = y + 10
             finalX = startX
             finalY = y- margin -1
-            linkid="CPNV"
     linkBlock = linkBlock.replace("$id", str(linkid))#id de la liaison
     linkBlock = linkBlock.replace("$xStart", str(startX))#id du début de la liaison(x) 
     linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
@@ -162,7 +193,7 @@ def createLink(id, x, y, width, height, margin, linkBlock, linkid):
     return linkBlock
 
 # methode qui crée un lien entre 2 composants avec un commentaire
-def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, commentBlock, comment):
+def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, commentBlock, comment, commentX, commentY):
     match id:
         case "srv_name":#si c'est un serveur -> trame reseau
             startX = x + (width/2)
@@ -190,13 +221,12 @@ def createLinkWithComment(id, x, y, width, height, margin, linkBlock, linkid, co
             startY = y + 10
             finalX = startX
             finalY = y- margin -1
-            linkid="CPNV"
     linkBlock = linkBlock.replace("$id", str(linkid))#id de la liaison
     linkBlock = linkBlock.replace("$xStart", str(startX))#id du début de la liaison(x) 
     linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
     linkBlock = linkBlock.replace("$xEnd", str(finalX))#id de la fin de la liaison(x) 
     linkBlock = linkBlock.replace("$yEnd", str(finalY))#id de la fin de la liaison(y)
-    linkBlock = linkBlock + commentLink(comment,0,-3, linkid, linkid+1, commentBlock)#commentaire du lien
+    linkBlock = linkBlock + commentLink(comment,commentX,commentY, linkid, linkid+1, commentBlock)#commentaire du lien
     return linkBlock
 
 def commentLink(comment, x, y, linkid, id, commentBlock):
@@ -207,6 +237,65 @@ def commentLink(comment, x, y, linkid, id, commentBlock):
     linkComment = linkComment.replace("$y", str(y))#id de la fin de la liaison(y)
     return linkComment
 
+def addTextArea(x,y,id,text,block, fontSize):
+    if(fontSize < 0):
+        fontSize = 14
+    block = block.replace("$id", str(id))
+    block = block.replace("$fontSize", str(fontSize))
+    block = block.replace("$text", text)
+    block = block.replace("$x", str(x))
+    block = block.replace("$y", str(y))
+    return block
+
+def addTextAreaNextToItem(itemX,itemY,itemId,newId,side,text,block):
+    if(side):
+        x = itemX + (GetSize(itemId)[0]*1.1)
+        y = itemY + (GetSize(itemId)[1] - GetSize("textArea")[1])/2
+    else:
+        x = itemX - (GetSize("textArea")[0]*1.1)
+        y = itemY + (GetSize(itemId)[1] - GetSize("textArea")[1])/2
+    return addTextArea(x,y,newId,text,block, -1)
+
+def GetSize(id):
+
+    #taille des differents composants
+    serverSize = [94,94]
+    clientSize = [67,91]
+    routerSize = [70,70]
+    firewallSize = [72,64]
+    wanSize = [118,79]
+    trameSize = [520,20]
+    textAreaSize = [100,30]
+    switchSize = [59,59]
+
+    match id:
+            # si c'est le serveur
+            case "server":
+                return serverSize
+            # si c'est le client
+            case "client":
+                return clientSize 
+            # si c'est la trame
+            case "trame":
+                return trameSize
+            # si c'est le routeur
+            case "router":
+                return routerSize
+            # si c'est le switch
+            case "switch":
+                return switchSize
+            # si c'est le firewall
+            case "firewall":
+                return firewallSize
+            # si c'est le wan
+            case "wan":
+               return wanSize
+            # si c'est une zone de text
+            case "textArea":
+               return textAreaSize
+            case _:
+                return 0
+
 # methode qui génére le shema reseau graçe aux données récupérée et transmises
 #values = valeurs des forme et leur id
 #x = position x de la forme
@@ -215,6 +304,9 @@ def commentLink(comment, x, y, linkid, id, commentBlock):
 #baseFileValue = paterne de base dans lequel on vien rajouter les formes
 def shemaGenerate(values, x, y, id, baseFileValue):
 
+    srvAppExist = False
+    if ((getValueOnFileContent("srvappl_name", values))[1] != "false"):
+        srvAppExist = True
     # taille du schema
     height = 438
     width = 600
@@ -229,6 +321,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
     firewallSize = [72,64]
     wanSize = [118,79]
     trameSize = [520,20]
+    textAreaSize = [100,30]
 
     #ici on récupère le contenu d'un fichier qui contient les paternes pour les différents composants du schema
     coponents = open(coponentFilePath).read()
@@ -249,28 +342,40 @@ def shemaGenerate(values, x, y, id, baseFileValue):
         match coponent[0]:
             # si c'est le serveur
             case "server":
+                if(srvAppExist):
+                    x = ((width - serverSize[0])/4)*2
+                else:
+                    x = ((width - serverSize[0])/3)*2
                 # on le met en haut à gauche
-                x = ((width - serverSize[0])/3)*2
                 y = marginTop
                 # on modifie le paterne en ajoutant nos donées
+                if (srvAppExist):
+                    shemaContent = "\n".join([shemaContent + replaceDataOnComponent(coponent[1], (getValueOnFileContent("srvappl_name", values))[1],x, y, id)])
+                    linksList = linksList+ createLinkWithComment("srv_name", x, y,serverSize[0], serverSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".15",0,0)
+                    # on augmente l'id pour eviter des bugs
+                    id = id+1
+                    x = ((width - serverSize[0])/4)*3
                 shemaContent = "\n".join([shemaContent + replaceDataOnComponent(coponent[1], (getValueOnFileContent("srv_name", values))[1], x, y, id)])
                 # on augmente l'id pour eviter des bugs
                 id = id+1
                 # on crée la liaison qui relie le serveur à la trame
-                linksList = linksList+ createLink("srv_name", x, y,serverSize[0], serverSize[1], margin, linkBlock, id)
+                linksList = linksList+ createLinkWithComment("srv_name", x, y,serverSize[0], serverSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".10",0,0)
                 # on augmente l'id pour eviter des bugs
-                id = id+1
+                id = id+1                
             # si c'est le client
             case "client":
                 # on le met en haut à gauche
-                x = (width - clientSize[0])/3
+                if(srvAppExist):
+                    x = (width - clientSize[0])/4
+                else:
+                    x = (width - clientSize[0])/3
                 y = marginTop
                 # on modifie le paterne en ajoutant nos donées
                 shemaContent = "\n".join([shemaContent, replaceDataOnComponent(coponent[1], (getValueOnFileContent("cli_name", values))[1], x, y, id)])
                 # on augmente l'id pour eviter des bugs
                 id = id+1
                 # on crée la liaison qui relie le client à la trame
-                linksList = linksList + createLink("cli_name", x, y,clientSize[0], clientSize[1], margin, linkBlock, id)
+                linksList = linksList + createLinkWithComment("cli_name", x, y,clientSize[0], clientSize[1], margin, linkBlock, id,(coponents[-2].split("!"))[1],str((getValueOnFileContent("bridge_netid", values))[1]) + ".50",0,0)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
             # si c'est la trame
@@ -278,7 +383,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 # on le met sous les clients et les serveurs
                 x = (width - trameSize[0])/2
                 y = (serverSize[1] + marginTop + margin)
-                text = str((getValueOnFileContent("bridge_name", values))[1]) + " | " + str((getValueOnFileContent("bridge_comment", values))[1]) + " | "  + str((getValueOnFileContent("bridge_netid", values))[1]) + ".0/24"
+                text = "vmbr" +  str((getValueOnFileContent("bridge_id", values))[1]) + " | " + str((getValueOnFileContent("bridge_netid", values))[1]) + ".0/24"
                 # on modifie le paterne en ajoutant nos donées
                 shemaContent = shemaContent + replaceDataOnComponent(coponent[1], text , 0, y, id)
                 # on augmente l'id pour eviter des bugs
@@ -292,7 +397,9 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 shemaContent = shemaContent + replaceDataOnComponent(coponent[1], (getValueOnFileContent("rt_name", values))[1], x, y, id)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
-                linksList = linksList+ createLinkWithComment("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".1")
+                linksList = linksList+ createLinkWithComment("rt_name", x, y,routerSize[0], routerSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("bridge_netid", values))[1]) + ".1",-0.5,0)
+                linksList = linksList+ addTextAreaNextToItem(x,y,"router",id,True,(getValueOnFileContent("rt_name", values))[1], coponents[-3].split("!")[1])
+                id = id+1
                 # on augmente l'id pour eviter des bugs
                 id = id+2
             # si c'est le firewall (pas utilisé)
@@ -318,7 +425,7 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 shemaContent = shemaContent + replaceDataOnComponent(coponent[1],"", x, y, id)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
-                linksList = linksList+ createLink("wan", x, y,wanSize[0], wanSize[1], margin, linkBlock, id)
+                linksList = linksList+ createLinkWithComment("wan", x, y,wanSize[0], wanSize[1], margin, linkBlock, id, (coponents[-2].split("!"))[1], str((getValueOnFileContent("wan_ip", values))[1]) + ".1",+0.5,0)
                 # on augmente l'id pour eviter des bugs
                 id = id+1
             # si c'est le tableau de donée
@@ -341,12 +448,23 @@ def shemaGenerate(values, x, y, id, baseFileValue):
                 email = (getValueOnFileContent("email", values))[1]
                 # position y du carré
                 squareY = int(height) - int(squareHeight)
+                # nom du domaine
+                domainName = (getValueOnFileContent("domain_name", values))[1]
                 # on modifie le paterne en ajoutant nos donées
-                square = replaceDataOnSquare(square, id,user,name,firstname,displayName,email,squareY)
+                square = replaceDataOnSquare(square, id,user,name,firstname,displayName,email,squareY,domainName)
                 # on ajoute notre carré au schema
                 shemaContent = shemaContent + square
                 # on augmente l'id pour eviter des bugs
                 id = id+1
+            case "textArea":
+                # on le met sous le firewall
+                x = 10
+                y = 20
+                # on modifie le paterne en ajoutant nos donées
+                linksList = linksList+ addTextArea(x,y,id,(getValueOnFileContent("project_name", values))[1],coponent[1],24)
+                # on augmente l'id pour eviter des bugs
+                id = id+1
+    
 
     # on ajoute notre liste de lien au shema mais au début car plus c'est au debut plus c'est en dessous donc les liens seront en dessous des icones
     shemaContent = linksList + shemaContent
@@ -366,17 +484,15 @@ def shemaGenerate(values, x, y, id, baseFileValue):
 if(len(sys.argv) < 2):
     print("veuillez indiquer le chemin du fichier .yml en paramètre")
 else:
-    my_file = sys.argv[1]
-    N = 4
     # get length of string
-    length = len(my_file)
+    length = len(ymlFilePath)
     # create a new string of last N characters
-    Str2 = my_file[length - N:]
+    Str2 = ymlFilePath[length - N:]
     # print Last 4 characters
     if(Str2 != ".yml"):
         print("le fichier que vous avez passé en paramètre n'est pas un fichier .yml")  
         print("veuillez renseigner le chemin du fichier .yml en paramètre")
-    elif(not os.path.isfile(my_file)):
+    elif(not os.path.isfile(ymlFilePath)):
         print("le chemin qu vous avez passé en paramètre n'existe pas") 
         print("veuillez renseigner le chemin du fichier .yml en paramètre")
     else:
@@ -405,28 +521,6 @@ else:
                         ["user_password",r"^.{1,20}$"],
                         ["email",r".*@[a-z0-9.-]*"],]
 
-        # nom du fichier drawio final 
-        destination = "aprecu.drawio"
-
-        # test pour savoir si on est sur windows ou pas
-        index = (platform.system().lower()).find("windows")
-
-        pathFormat = "/"
-
-        # on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
-        if index >= 0:
-            pathFormat = "\\"
-            descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
-        else:
-            descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
-
-
-        script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-
-        #chemin du fichier qui contient la base du schema
-        baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
-        #chemin du fichier qui contient les différents paterns
-        coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
 
         # copie du fichier de base sur le bureau
         shutil.copyfile(baseFilepath, descktopPath)
@@ -435,18 +529,13 @@ else:
         baseFileValue = open(descktopPath).read()
 
         # on test si il y a un fichier .yml dans le repertoire
-        if(my_file == ""):
+        if(ymlFilePath == ""):
             # si non on affiche un message d'erreur
             print("veuilliez ajouter un fichier .yml à coté du script")
         else:
             #si oui on commence le script
-
-            # tableau contenant la liste des donée erronées
-            errorArray = []
-            #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
-            keyValueArray = []
             # on recupère le contenu du fichier .yml qu'on a trouvé
-            fileContent = open(my_file).read()
+            fileContent = open(ymlFilePath).read()
             # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
             fileContent = fileContent.split("\n")
             # on passe par chaque case du tableau
