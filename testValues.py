@@ -130,3 +130,4 @@ else:
         for error in errorArray:
             printTextOnABox("paramètre erroné: " + str(error[0]))
             printTextOnABox("valeur: " + str(error[1]))
+            print("┼─────────────────────────────────────┼")
