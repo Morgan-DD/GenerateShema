@@ -12,6 +12,61 @@ import glob
 import sys
 import re
 
+if(len(sys.argv) > 1):
+    ymlFilePath = sys.argv[1]
+else:
+    ymlFilePath = ""
+N = 4
+
+destination = "aprecu.drawio"
+
+checkValueArray = [["srv_name",r"^.{1,15}$"],
+                   ["cli_name",r".{1,15}"],
+                   ["bridge_name",r"^.{1,8}$"],
+                   ["bridge_comment",r"^.{1,8}$"],
+                   ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
+                   ["dc_hostname",r"^.{1,15}$"],
+                   ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
+                   ["domain_admin_password",r"^.{1,20}$"],
+                   ["recovery_password",r"^.{1,20}$"],
+                   ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}([A-z]?)-[A-z]{2}[0-9]{2}"],
+                   ["upn",r"^.{1,15}$"],
+                   ["firstname",r"^.{1,15}$"],
+                   ["surname",r"^.{1,15}$"],
+                   ["display_name",r"^.{1,20}$"],
+                   ["user_password",r"^.{1,20}$"],
+                   ["email",r".*@[a-z0-9.-]*"],]
+
+# test pour savoir si on est sur windows ou pas
+index = (platform.system().lower()).find("windows")
+
+pathFormat = "/"
+
+# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
+if index >= 0:
+    pathFormat = "\\"
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+else:
+    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
+
+
+script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+#chemin du fichier qui contient la base du schema
+baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
+#chemin du fichier qui contient les différents paterns
+coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
+
+# copie du fichier de base sur le bureau
+shutil.copyfile(baseFilepath, descktopPath)
+
+# on copie le contenu de se fichier
+baseFileValue = open(descktopPath).read()
+
+# on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
+script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+os.chdir(script_folder_path)
+
 def DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, idsBigestHeight, idsBigestWidth):
 
     marginSide = 25
@@ -35,7 +90,7 @@ def DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, idsBigestHei
     idLine = 0
     idItem =0
     for line in matrix: 
-
+        print(line)
         lastX = 0
         if(lastY > 0):
             y = lastY + midMargin
@@ -55,13 +110,13 @@ def DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, idsBigestHei
                 tempheight = GetSize(singleBlock)[1]
             lastX = x + GetSize(singleBlock)[0]
             lastY = y + GetSize(singleBlock)[1]
-            print("["+str(idItem)+ "]")
-            print("x:" + str(x))
-            print("Bigest width: " + str(((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))))
-            print("item width: " + str(GetSize(singleBlock)[0]))
-            print("difference width: " + str((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))
-            print("x + difference width: " + str((x + ((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))))
-            print("-----")
+#            print("["+str(idItem)+ "]")
+#            print("x:" + str(x))
+#            print("Bigest width: " + str(((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))))
+#            print("item width: " + str(GetSize(singleBlock)[0]))
+#            print("difference width: " + str((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))
+#            print("x + difference width: " + str((x + ((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))))
+#            print("-----")
             #y=y + ((((GetSize(matrix[idsBigestHeight[0]][idsBigestHeight[1]])[1]))-GetSize(singleBlock)[1])/2)
             tempLineNewValue.append([singleBlock, idItem, x, y, idLine])
             #tempLineNewValue.append([singleBlock, idItem, (x + ((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2)), (y + ((((GetSize(matrix[idsBigestHeight[0]][idsBigestHeight[1]])[1]))-GetSize(singleBlock)[1])/2)), idLine])
@@ -374,167 +429,132 @@ def matchingError(id, value):
     # affiche une ligne de séparartion pour une meilleure lecture
     displaySeparation()
 
-destination = "aprecu.drawio"
-
-checkValueArray = [["srv_name",r"^.{1,15}$"],
-                   ["cli_name",r".{1,15}"],
-                   ["bridge_name",r"^.{1,8}$"],
-                   ["bridge_comment",r"^.{1,8}$"],
-                   ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
-                   ["dc_hostname",r"^.{1,15}$"],
-                   ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
-                   ["domain_admin_password",r"^.{1,20}$"],
-                   ["recovery_password",r"^.{1,20}$"],
-                   ["rt_name",r"[A-z]{2}-[A-z][0-9]{3}([A-z]?)-[A-z]{2}[0-9]{2}"],
-                   ["upn",r"^.{1,15}$"],
-                   ["firstname",r"^.{1,15}$"],
-                   ["surname",r"^.{1,15}$"],
-                   ["display_name",r"^.{1,20}$"],
-                   ["user_password",r"^.{1,20}$"],
-                   ["email",r".*@[a-z0-9.-]*"],]
-
-# test pour savoir si on est sur windows ou pas
-index = (platform.system().lower()).find("windows")
-
-pathFormat = "/"
-
-# on definit le chemin du bureau et le separateur dans le chemin entre winodws et linux
-if index >= 0:
-    pathFormat = "\\"
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop') + pathFormat + destination
+if(len(sys.argv) < 2 and ymlFilePath != ""):
+    print("veuillez indiquer le chemin du fichier .yml en paramètre")
 else:
-    descktopPath = os.path.join(os.path.join(os.path.expanduser('~')), '') + "Bureau/" + destination
+    # get length of string
+    length = len(ymlFilePath)
+    # create a new string of last N characters
+    Str2 = ymlFilePath[length - N:]
+    # print Last 4 characters
+    if(Str2 != ".yml"):
+        print("le fichier que vous avez passé en paramètre n'est pas un fichier .yml")  
+        print("veuillez renseigner le chemin du fichier .yml en paramètre")
+    elif(not os.path.isfile(ymlFilePath)):
+        print("le chemin qu vous avez passé en paramètre n'existe pas") 
+        print("veuillez renseigner le chemin du fichier .yml en paramètre")
+    else:
+        # on test si il y a un fichier .yml dans le repertoire
+        if(len(ymlFilePath) <= 0):
+            # si non on affiche un message d'erreur
+            print("veuilliez ajouter un fichier .yml à coté du script")
+        else:
+            #si oui on commence le script
 
+            # tableau contenant la liste des donée erronées
+            errorArray = []
+            #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
+            keyValueArray = []
+            # on recupère le contenu du fichier .yml qu'on a trouvé
+            fileContent = open(ymlFilePath).read()
+            # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
+            fileContent = fileContent.split("\n")
+            # on passe par chaque case du tableau
+            for line in fileContent:
+                print(line)
 
-script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
+                """
+                # si la case est pas vide (ligne vide ou fausse)
+                if((line.split('#'))[0] != ""):
+                    # on edit notre clé et notre valeur pour les rendre fonctionelles
+                    lineValue = ((line.split('#'))[0].split(':'))[1].lstrip().rstrip()
+                    lineKey = ((line.split('#'))[0].split(':'))[0].lstrip().rstrip()
+                    # on "nettoye notre valeur"
+                    lineValue = CleanString(lineValue)
+                    # on met notre clé et notre valeur dans un tableau temporaire
+                    KeyValueArrayTemp = [lineKey, lineValue]
+                    # on ajoute ce tableau temporaire à notre tableau principal
+                    keyValueArray.append(KeyValueArrayTemp)
+                del line
+                """
 
-#chemin du fichier qui contient la base du schema
-baseFilepath = script_folder_path + pathFormat + "component" + pathFormat + "base.txt"
-#chemin du fichier qui contient les différents paterns
-coponentFilePath = script_folder_path + pathFormat + "component" + pathFormat + "block.txt"
+            # on passe dans le tableau crée juste en dessu
+            for i in range(len(keyValueArray)):
+                if(keyValueArray[i][1] != ""):
+                    for regex in checkValueArray:
+                        # on regarde si notre valeur respecte le regex
+                        if regex[0] == keyValueArray[i][0]:
+                            testRegex = testRegexValue(regex[1], keyValueArray[i][1])
+                            testRegex = not testRegex
+                            # si c'est pas le cas on l'ajoute à un tableau des erreurs
+                            if (testRegex):
+                                errorArray.append(keyValueArray[i])
 
-# copie du fichier de base sur le bureau
-shutil.copyfile(baseFilepath, descktopPath)
-
-# on copie le contenu de se fichier
-baseFileValue = open(descktopPath).read()
-
-# on recherche si il y a un fichier .yml dans le meme repertoire que le script et on récupère son nom
-script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-os.chdir(script_folder_path)
-my_files = glob.glob('*.yml')
-
-# on test si il y a un fichier .yml dans le repertoire
-if(len(my_files) <= 0):
-    # si non on affiche un message d'erreur
-    print("veuilliez ajouter un fichier .yml à coté du script")
-else:
-    #si oui on commence le script
-
-    # tableau contenant la liste des donée erronées
-    errorArray = []
-    #tableau contenant la liste des valeur(array[1]) et de leur clé(array[0])
-    keyValueArray = []
-    # on recupère le contenu du fichier .yml qu'on a trouvé
-    fileContent = open(my_files[0]).read()
-    # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
-    fileContent = fileContent.split("\n")
-    # on passe par chaque case du tableau
-    for line in fileContent:
-        # si la case est pas vide (ligne vide ou fausse)
-        if((line.split('#'))[0] != ""):
-            # on edit notre clé et notre valeur pour les rendre fonctionelles
-            lineValue = ((line.split('#'))[0].split(':'))[1].lstrip().rstrip()
-            lineKey = ((line.split('#'))[0].split(':'))[0].lstrip().rstrip()
-            # on "nettoye notre valeur"
-            lineValue = CleanString(lineValue)
-            # on met notre clé et notre valeur dans un tableau temporaire
-            KeyValueArrayTemp = [lineKey, lineValue]
-            # on ajoute ce tableau temporaire à notre tableau principal
-            keyValueArray.append(KeyValueArrayTemp)
-        del line
-
-    # on passe dans le tableau crée juste en dessu
-    for i in range(len(keyValueArray)):
-        if(keyValueArray[i][1] != ""):
-            for regex in checkValueArray:
-                # on regarde si notre valeur respecte le regex
-                if regex[0] == keyValueArray[i][0]:
-                    testRegex = testRegexValue(regex[1], keyValueArray[i][1])
-                    testRegex = not testRegex
-                    # si c'est pas le cas on l'ajoute à un tableau des erreurs
-                    if (testRegex):
-                        errorArray.append(keyValueArray[i])
-
-    matrix = []
-    matrixLine =[]
-    addToMatrix = False
-    idItemKey = 0
-    print("longeur keyValueArray: " + str(len(keyValueArray)))
-    print("...,...,...,...,...,...,...,...,...,...,...,...,...,...,...")
-    for item in keyValueArray:
-        print("item id: " + str(idItemKey))
-        itemId = matchingDataWithId(item[0])
-        if(itemId != ""):
-            print(itemId)
-            print("linkable: " + str(isLinkable(itemId)))
-            if(isLinkable(itemId)):
-                matrixLine=matrixLine+([itemId])
-            print("next: " + str((checkLineId(keyValueArray, idItemKey+1))))
-            print("is trame: " + str(isATrame(checkLineId(keyValueArray, idItemKey+1))))
-            print("is last: " + str(idItemKey == len(keyValueArray)))
-            print("is data: " + str(isData(keyValueArray, idItemKey+1)))
-            if(isATrame(checkLineId(keyValueArray, idItemKey+1)) or idItemKey == len(keyValueArray) or isData(keyValueArray, idItemKey+1)):
-                addToMatrix = True
-        idItemKey=idItemKey+1
-        if(addToMatrix):
-            print("ligne: " + str(matrixLine))
-            matrix.append(matrixLine)
+            matrix = []
+            matrixLine =[]
             addToMatrix = False
-            matrixLine=[]
-        print("------------------------------------------------------------")
-    print("matrix:")
-    print(matrix)
+            idItemKey = 0
+#            print("longeur keyValueArray: " + str(len(keyValueArray)))
+#            print("...,...,...,...,...,...,...,...,...,...,...,...,...,...,...")
+            for item in keyValueArray:
+#                print("item id: " + str(idItemKey))
+                itemId = matchingDataWithId(item[0])
+                if(itemId != ""):
+#                    print(itemId)
+#                    print("linkable: " + str(isLinkable(itemId)))
+                    if(isLinkable(itemId)):
+                        matrixLine=matrixLine+([itemId])
+#                    print("next: " + str((checkLineId(keyValueArray, idItemKey+1))))
+#                    print("is trame: " + str(isATrame(checkLineId(keyValueArray, idItemKey+1))))
+#                    print("is last: " + str(idItemKey == len(keyValueArray)))
+#                    print("is data: " + str(isData(keyValueArray, idItemKey+1)))
+                    if(isATrame(checkLineId(keyValueArray, idItemKey+1)) or idItemKey == len(keyValueArray) or isData(keyValueArray, idItemKey+1)):
+                        addToMatrix = True
+                idItemKey=idItemKey+1
+                if(addToMatrix):
+#                    print("ligne: " + str(matrixLine))
+                    matrix.append(matrixLine)
+                    addToMatrix = False
+                    matrixLine=[]
+#                print("------------------------------------------------------------")
+#            print("matrix:")
+#            print(matrix)
 
-    displaySeparation()
-    # on passe dans le tableau des erreurs crée juste en dessu
-    for error in errorArray:
-        # on affiche le message d'erreur lié à l'erreur
-        matchingError(error[0], error[1])
+#            displaySeparation()
 
-coponents = open(coponentFilePath).read()
-# separe par composant
-coponents = coponents.split("|")
+        coponents = open(coponentFilePath).read()
+        # separe par composant
+        coponents = coponents.split("|")
 
-blockList = []
+        blockList = []
 
-for component in coponents:
-    component = component.split("!")
-    blockList = blockList + [[component[0].replace("\n", ""), component[1]]]
+        for component in coponents:
+            component = component.split("!")
+            blockList = blockList + [[component[0].replace("\n", ""), component[1]]]
 
 
 
-if(len(matrix) > 0):
-    id = 0
-    idLongerItem = 0
-    idLineBigestWidth = 0
-    idItemBigestWidth = 0
-    idLineBigestHeight = 0
-    idItemBigestHeight = 0
-    LongestWith = 0
-    lineId = 0
-    itemId = 0
-    for line in matrix:
-        for item in line:
-            if(GetSize(matrix[idLineBigestHeight][idItemBigestHeight])[1] < GetSize(item)[1] and item != "trame" and item != "dataArray"):
-                idLineBigestHeight = lineId
-                idItemBigestHeight = itemId
-            if(GetSize(matrix[idLineBigestWidth][idItemBigestWidth])[1] < GetSize(item)[0] and item != "trame" and item != "dataArray"):
-                idLineBigestWidth = lineId
-                idItemBigestWidth = id
-            itemId=itemId+1
-        if len(line) > LongestWith:
-            LongestWith = len(line)
-            idLongerItem = lineId
-        lineId=lineId+1
-    id = DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, [idLineBigestHeight,idItemBigestHeight], [idLineBigestWidth,idItemBigestWidth])
+        if(len(matrix) > 0):
+            id = 0
+            idLongerItem = 0
+            idLineBigestWidth = 0
+            idItemBigestWidth = 0
+            idLineBigestHeight = 0
+            idItemBigestHeight = 0
+            LongestWith = 0
+            lineId = 0
+            itemId = 0
+            for line in matrix:
+                for item in line:
+                    if(GetSize(matrix[idLineBigestHeight][idItemBigestHeight])[1] < GetSize(item)[1] and item != "trame" and item != "dataArray"):
+                        idLineBigestHeight = lineId
+                        idItemBigestHeight = itemId
+                    if(GetSize(matrix[idLineBigestWidth][idItemBigestWidth])[1] < GetSize(item)[0] and item != "trame" and item != "dataArray"):
+                        idLineBigestWidth = lineId
+                        idItemBigestWidth = id
+                    itemId=itemId+1
+                if len(line) > LongestWith:
+                    LongestWith = len(line)
+                    idLongerItem = lineId
+                lineId=lineId+1
+            id = DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, [idLineBigestHeight,idItemBigestHeight], [idLineBigestWidth,idItemBigestWidth])
