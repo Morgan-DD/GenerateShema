@@ -10,6 +10,14 @@ import glob
 import sys
 import re
 
+if(len(sys.argv) > 1):
+    debug = sys.argv[1]
+
+    if(debug.lower() == "-debug"):
+        displayDebug = True
+else:
+    displayDebug = False
+
 # méthode servant à nettoyer une string de ses caractère tel que ["] et [']
 #string = une string
 def CleanString(string):
@@ -22,18 +30,41 @@ def CleanString(string):
 def testRegexValue(regex, value):
     return bool(re.match(regex, value))
 
+def printTextOnABox(text):
+    length = len(str(text)) +2
+    toPrint = ["","│ " + str(text) + " │", ""]
+    position = True
+    for a in range(0,2):
+        for i in range(0,length):
+            if(position):
+                if i == 0:
+                    toPrint[0] = toPrint[0] + "┌"
+                toPrint[0] = toPrint[0] + "─"
+                if i == length-1:
+                    toPrint[0] = toPrint[0] + "┐"
+            else:
+                if i == 0:
+                    toPrint[2] = toPrint[2] + "└"
+                toPrint[2] = toPrint[2] + "─"
+                if i == length-1:
+                    toPrint[2] = toPrint[2] + "┘"
+        position = False
+        i = 0
+    for line in toPrint:
+        print(line)
+    
 # liste des clé et le regex que leurs valeurs doivent respecter
 checkValueArray = [["daysuse",r"^[0-9]{1,2}$"],
-                   ["project_name",r"^.{1,15}$"],
-                   ["srv_name",r"^.{1,15}$"],
-                   ["cli_name",r".{1,15}"],
-                   ["srvappl_name",r"^.{1,15}$"],
+                   ["project_name",r"^[A-Za-z0-9-.-.]{1,15}$"],
+                   ["srv_name",r"^[A-Za-z0-9-.-.]{1,15}$"],
+                   ["cli_name",r"^[A-Za-z0-9-.-.]{1,15}$"],
+                   ["srvappl_name",r"^[A-Za-z0-9-.-.]{1,15}$"],
                    ["bridge_netid",r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){2}"],
                    ["domain_name",r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$"],
                    ["domain_admin_password",r"^.{1,20}$"],
                    ["recovery_password",r"^.{1,20}$"],
-                   ["rt_name",r"^.{1,15}$"],
-                   ["upn",r"^.{1,15}$"],
+                   ["rt_name",r"^[A-Za-z0-9-.-.]{1,15}$"],
+                   ["upn",r"^[A-Za-z0-9-.-.]{1,15}$"],
                    ["firstname",r"^.{1,15}$"],
                    ["surname",r"^.{1,15}$"],
                    ["display_name",r"^.{1,20}$"],
@@ -89,6 +120,13 @@ else:
                     errorArray.append(keyValueArray[i])
 
     if(len(errorArray) > 0):
-        print(False)
+        if(displayDebug):
+            printTextOnABox("resultat: "+ str(False))
+        else:
+            print(False)
     else:
         print(True)
+    if(displayDebug):
+        for error in errorArray:
+            printTextOnABox("paramètre erroné: " + str(error[0]))
+            printTextOnABox("valeur: " + str(error[1]))
