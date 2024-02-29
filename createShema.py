@@ -67,108 +67,69 @@ baseFileValue = open(descktopPath).read()
 script_folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 os.chdir(script_folder_path)
 
-def DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, idsBigestHeight, idsBigestWidth):
+idItem = 0
+matrix = []
+matrixLine =["void"]
+addToMatrix = False
+idItemKey = 0
 
-    marginSide = 25
-    midMargin = 50
-    
-    itemTotalWith = 0
+idLongerItem = 0
+idLineBigestWidth = 0
+idItemBigestWidth = 0
+idLineBigestHight = 0
+idItemBigestHight = 0
+LongestWith = 0
+idHighestHight = [0,0]
+idLongerLine = 0
 
-    matrixNewValue = []
+def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockList, baseFileValue):
 
-    for singleBlock in matrix[idLongerItem]:
-        itemTotalWith=itemTotalWith+GetSize(singleBlock)[1]
-        
-    tempheight=0
-    totalWith = []
-    tempwidth = 0
-    lastX = 0
-    lastY = 0
-    arrayX = 0
-    arrayY = 0
-    tempLineNewValue = []
+    width = (GetSize("space")[0]*2) + (getLineItemWidth(getItemOnALine(matrix, idLongerLine))) + (len(getItemOnALine(matrix, idLongerLine)) * GetSize("space")[1])
+    Hight = (GetSize("space")[0]*2) + GetSize(matrix[idHighestHightC][idHighestHightL][0])[1] + (len(matrix) * GetSize("space")[1])
     idLine = 0
-    idItem =0
-    for line in matrix: 
-        print(line)
-        lastX = 0
-        if(lastY > 0):
-            y = lastY + midMargin
-        else:
-            y = lastY + marginSide
-
-        for singleBlock in line:
-            if(lastX > 0):
-                x = lastX
-            else:
-                x = lastX
-
-            tempwidth = tempwidth + (GetSize(singleBlock))[0]
-            formHeight = GetSize(singleBlock)[1]
-            
-            if(formHeight > tempheight):
-                tempheight = GetSize(singleBlock)[1]
-            lastX = x + GetSize(singleBlock)[0]
-            lastY = y + GetSize(singleBlock)[1]
-#            print("["+str(idItem)+ "]")
-#            print("x:" + str(x))
-#            print("Bigest width: " + str(((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))))
-#            print("item width: " + str(GetSize(singleBlock)[0]))
-#            print("difference width: " + str((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))
-#            print("x + difference width: " + str((x + ((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2))))
-#            print("-----")
-            #y=y + ((((GetSize(matrix[idsBigestHeight[0]][idsBigestHeight[1]])[1]))-GetSize(singleBlock)[1])/2)
-            tempLineNewValue.append([singleBlock, idItem, x, y, idLine])
-            #tempLineNewValue.append([singleBlock, idItem, (x + ((((GetSize(matrix[idsBigestWidth[0]][idsBigestWidth[1]])[0]))-GetSize(singleBlock)[0])/2)), (y + ((((GetSize(matrix[idsBigestHeight[0]][idsBigestHeight[1]])[1]))-GetSize(singleBlock)[1])/2)), idLine])
-            idItem=idItem+1
-            arrayX = arrayX +1
-
-        arrayY = arrayY +1
-        arrayX = 0
-        
-        matrixNewValue=matrixNewValue+tempLineNewValue
-        tempLineNewValue.clear()
-        idLine=idLine+1
-
-        height=tempheight
-        totalWith.append(tempwidth)
-        tempwidth = 0
-
-    width = itemTotalWith + (len(matrix[idLongerItem])-1)*midMargin + marginSide*2
-    height = height + (len(blockList)-1)*midMargin + marginSide*2
-
     idItem = 0
-    countItemOnLine=1
-    for item in matrixNewValue:
-            if(item[0] == "trame"):
-                matrixNewValue[idItem][2] = item[2] + int((width - (width - 2*marginSide)) / (len(matrix[item[4]])+1))
-            else:  
-                spaceValue = int((width - totalWith[item[4]]) / (nbOnLine(matrixNewValue,item[4])+1))
-                matrixNewValue[idItem][2] = item[2] + spaceValue*countItemOnLine
-
-            if(idItem < len(matrixNewValue) -1):
-                if(matrixNewValue[idItem][4] == matrixNewValue[idItem+1][4]):
-                    countItemOnLine=countItemOnLine+1
-                else:
-                    countItemOnLine=1
-            idItem=idItem+1
-    nbOnLine(matrixNewValue, 0)
+    x = 0
+    y = 0
     FinalBlock = ""
-    for item in matrixNewValue:
-        if(item[0] == "trame"):
-            FinalBlock = FinalBlock + replaceDataOnTrame(getValueOnFileContent(item[0], blockList)[1], "trame", item[2], item[3], width - 2*marginSide,id)
-        else:
-            FinalBlock = FinalBlock + replaceDataOnComponent(getValueOnFileContent(item[0], blockList)[1], item[1], item[2], item[3],id)
-        id=id+1
+    idItemAdd = 0
 
-    linkList = joinEverything(blockList[-1], matrixNewValue, idLongerItem, id, midMargin)
+    for matrixLine in matrix:
+        lineTotalWidth = getLineItemWidth(getItemOnALine(matrix, idLine))
+        space = (width - lineTotalWidth)/(len(getItemOnALine(matrix, idLine))+1)
+        print("space: " + str(space))
+        for matrixItem in matrixLine:
+            if(matrixItem[0] != "trame"):
+                x = GetSize("space")[0] + space*idItem
+            else:
+                x = GetSize("space")[0]
+            if(idLine > 0):
+                y = GetSize("space")[0] + GetSize("space")[1]*idLine + GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]
+#                print(findHighesItemOnLine(matrix[idLine-1]))
+#                print(str(GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]))
+            else:
+                y = GetSize("space")[0] + GetSize("space")[1]*idLine
+            print("x: " + str(x))
+            print("y: " + str(GetSize("space")[0] + GetSize("space")[1]*idLine))
+            print("Y+: " + str(y) + ", " + str(GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]))
+            print(matrixItem)
+            if(matrixItem[0] == "trame"):
+                FinalBlock = FinalBlock + replaceDataOnTrame(getValueOnFileContent(matrixItem[0], blockList)[1], "trame", x, y, width - (2*GetSize("space")[0]),idItemAdd)
+            else:
+                FinalBlock = FinalBlock + replaceDataOnComponent(getValueOnFileContent(matrixItem[0], blockList)[1], matrixItem[1], x, y,idItemAdd)
+            idItemAdd=idItemAdd+1
+            idItem=idItem+1
+        idLine=idLine+1
+        idItem=0
+        print("----------------------------------------------")
+
+
 
     # on ajoute notre liste de lien au shema mais au début car plus c'est au debut plus c'est en dessous donc les liens seront en dessous des icones
-    shemaContent = linkList + FinalBlock
+    shemaContent = FinalBlock
     # on ajoute nos formes au fichier de base
     baseFileValue = baseFileValue.replace("$REPLACEME", shemaContent)
     # on change la hauteur du shema
-    baseFileValue = baseFileValue.replace("$height", str(height))
+    baseFileValue = baseFileValue.replace("$Hight", str(Hight))
     # on change la largeur du shema
     baseFileValue = baseFileValue.replace("$width", str(width))
     # on ouvre le fichier de destination (sur le bureau) aprecu.drawio
@@ -177,6 +138,47 @@ def DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, idsBigestHei
     file.write(baseFileValue)
     # on ferme le fichier
     file.close
+
+
+def findHighesItemOnLine(line):
+    highestItemId = 0
+    idItem = 0
+    for item in line:
+        if (GetSize(item[0])[1] > GetSize(line[highestItemId][0])[1]):
+          highestItemId = idItem
+    idItem=idItem+1
+    return highestItemId
+
+def lineHasATrame(line):
+    hasATrame = False
+    for item in line:
+        if(item[0] == "trame"):
+            hasATrame = True
+    return hasATrame
+
+def getItemOnALine(allItems, idLineSearch):
+    idLine = 0
+    for line in allItems:
+        if (idLine == idLineSearch):
+            return line
+        idLine=idLine+1
+    return ""
+
+def isAnItem(id):
+    itemList = ["trame","switch","router","firewall","wan","server","client"]
+    for item in itemList:
+        if (item == id):
+            return True
+    return False
+
+def getLineItemWidth(items):
+    if(len(items) == 0):
+        return ""
+    lineItemWidth = 0
+    for item in items:
+        lineItemWidth = lineItemWidth + GetSize(item[0])[0]
+
+    return lineItemWidth
 
 def joinEverything(linkBlock, matrix, idLongerItem, id, margin):
     idLine = 0
@@ -244,7 +246,7 @@ def createLinkToTrame(id, x, y, linkBlock, linkid,margin, direction, trameY):
 
 
 
-def createLink(id, x, y, width, height, linkBlock, linkid, finalX, finalY, finalId, direction):
+def createLink(id, x, y, width, Hight, linkBlock, linkid, finalX, finalY, finalId, direction):
     startX = x + (GetSize(id)[0])/2
     finalX = finalX + (GetSize(finalId)[0])/2
     finalY = finalY + (GetSize(id)[1])/8
@@ -278,6 +280,8 @@ def GetSize(id):
     firewallSize = [72,64]
     wanSize = [118,79]
     trameSize = [520,20]
+    space = [25,50]
+    trameSize = [0,50]
     match id:
             # si c'est le serveur
             case "server":
@@ -300,6 +304,12 @@ def GetSize(id):
             # si c'est le wan
             case "wan":
                return wanSize
+            # si c'est le marges
+            case "space":
+               return space
+            # si c'est le marges
+            case "trame":
+               return space
             case _:
                 return 0
 
@@ -350,11 +360,12 @@ def isATrame(name):
         return False
 
 def matchingDataWithId(data):
-    if(data.startswith("bridge_")):
-        return "trame"
     match data:
             # si c'est le serveur
             case "srv_name":
+                return "server"
+            # si c'est le serveur
+            case "srvappl_name":
                 return "server"
             # si c'est le client
             case "cli_name":
@@ -371,6 +382,9 @@ def matchingDataWithId(data):
             # si c'est le wan
             case "wan":
                return "wan"
+            # si c'est le wan
+            case "bridge_netid":
+               return "trame"
             case _:
                 return ""
 
@@ -395,7 +409,8 @@ def printArray(array):
     displaySeparation()
 
 def CleanString(string):
-    if string[0] == "'" or string[0] == "\"":
+    string = string.replace(" ", "")
+    if string[0] == "'" or string[0] == "\"": 
         string = string[1:]
     if string[len(string)-1] == "'" or string[len(string)-1] == "\"":
         string = string[:-1]
@@ -460,8 +475,27 @@ else:
             # on edit le contenu du fichier pour en faire un tableau et que les donées soient lisibles et utilisables
             fileContent = fileContent.split("\n")
             # on passe par chaque case du tableau
+            idLine = 0
             for line in fileContent:
-                print(line)
+                line = (line.split("#")[0]).split(":")
+                if(line[0] != ""):
+                    line[0] = CleanString(line[0])
+                if(len(line) > 1):
+                    if(line[1] != ""):
+                        line[1] = CleanString(line[1])
+                if(matchingDataWithId(line[0]) != ""):
+                    matrixLine.append([matchingDataWithId(line[0]),line[1], idItem])
+                    idItem=idItem+1
+                if(line[0] == "/line" or idLine == len(fileContent)-1):
+                    addToMatrix = True
+                if(line[0] == "/link"):
+                    matrixLine[-1].append("$link:" + str(int(line[1])-1))
+                if(addToMatrix):
+                    del matrixLine[0]
+                    matrix.append(matrixLine)
+                    addToMatrix = False
+                    matrixLine=["void"]
+                idLine=idLine+1
 
                 """
                 # si la case est pas vide (ligne vide ou fausse)
@@ -478,47 +512,10 @@ else:
                 del line
                 """
 
-            # on passe dans le tableau crée juste en dessu
-            for i in range(len(keyValueArray)):
-                if(keyValueArray[i][1] != ""):
-                    for regex in checkValueArray:
-                        # on regarde si notre valeur respecte le regex
-                        if regex[0] == keyValueArray[i][0]:
-                            testRegex = testRegexValue(regex[1], keyValueArray[i][1])
-                            testRegex = not testRegex
-                            # si c'est pas le cas on l'ajoute à un tableau des erreurs
-                            if (testRegex):
-                                errorArray.append(keyValueArray[i])
-
-            matrix = []
-            matrixLine =[]
-            addToMatrix = False
-            idItemKey = 0
-#            print("longeur keyValueArray: " + str(len(keyValueArray)))
-#            print("...,...,...,...,...,...,...,...,...,...,...,...,...,...,...")
-            for item in keyValueArray:
-#                print("item id: " + str(idItemKey))
-                itemId = matchingDataWithId(item[0])
-                if(itemId != ""):
-#                    print(itemId)
-#                    print("linkable: " + str(isLinkable(itemId)))
-                    if(isLinkable(itemId)):
-                        matrixLine=matrixLine+([itemId])
-#                    print("next: " + str((checkLineId(keyValueArray, idItemKey+1))))
-#                    print("is trame: " + str(isATrame(checkLineId(keyValueArray, idItemKey+1))))
-#                    print("is last: " + str(idItemKey == len(keyValueArray)))
-#                    print("is data: " + str(isData(keyValueArray, idItemKey+1)))
-                    if(isATrame(checkLineId(keyValueArray, idItemKey+1)) or idItemKey == len(keyValueArray) or isData(keyValueArray, idItemKey+1)):
-                        addToMatrix = True
-                idItemKey=idItemKey+1
-                if(addToMatrix):
-#                    print("ligne: " + str(matrixLine))
-                    matrix.append(matrixLine)
-                    addToMatrix = False
-                    matrixLine=[]
-#                print("------------------------------------------------------------")
+#           
 #            print("matrix:")
-#            print(matrix)
+#            for line in matrix:
+#                print(line)
 
 #            displaySeparation()
 
@@ -536,25 +533,18 @@ else:
 
         if(len(matrix) > 0):
             id = 0
-            idLongerItem = 0
-            idLineBigestWidth = 0
-            idItemBigestWidth = 0
-            idLineBigestHeight = 0
-            idItemBigestHeight = 0
-            LongestWith = 0
             lineId = 0
             itemId = 0
-            for line in matrix:
-                for item in line:
-                    if(GetSize(matrix[idLineBigestHeight][idItemBigestHeight])[1] < GetSize(item)[1] and item != "trame" and item != "dataArray"):
-                        idLineBigestHeight = lineId
-                        idItemBigestHeight = itemId
-                    if(GetSize(matrix[idLineBigestWidth][idItemBigestWidth])[1] < GetSize(item)[0] and item != "trame" and item != "dataArray"):
-                        idLineBigestWidth = lineId
-                        idItemBigestWidth = id
-                    itemId=itemId+1
-                if len(line) > LongestWith:
-                    LongestWith = len(line)
-                    idLongerItem = lineId
-                lineId=lineId+1
-            id = DisplayList(matrix, id, blockList, idLongerItem, baseFileValue, [idLineBigestHeight,idItemBigestHeight], [idLineBigestWidth,idItemBigestWidth])
+        for matrixLine in matrix:
+            lineTotalWidth = getLineItemWidth(getItemOnALine(matrix, lineId))
+            if(int(lineTotalWidth) > getLineItemWidth(getItemOnALine(matrix, idLongerLine)) and not lineHasATrame(matrixLine)):
+                idLongerLine = lineId
+            for matrixItem in matrixLine:                
+                if(GetSize(matrix[idHighestHight[0]][idHighestHight[1]][0])[1] <  GetSize(matrixItem[0])[1]):
+                    idHighestHight[0] = lineId
+                    idHighestHight[1] = itemId
+                idItem=idItem+1
+            lineId=lineId+1
+            idItem=0
+        print("----------------------------------------------")
+        DisplayList(matrix, idLongerLine, idHighestHight[1], idHighestHight[0], blockList, baseFileValue)
