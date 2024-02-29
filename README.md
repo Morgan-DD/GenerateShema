@@ -101,7 +101,7 @@ Le fichier yml à ce format:
 Quand tout ça est fini le fichier .drawio est généré et déposé sur le bureau.  
 >![drawIoFile](imageForReadMe/drawIoFile.png)
 
-# Règles fonctionnement du fichier yml
+# Règles et fonctionnement du fichier yml
 
 >`daysuse:` nombre de jour d'utilisation, nombre à 1 ou 2 digits.  
 Ex: `1,64,26,92,9,41,76,`
