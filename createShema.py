@@ -12,7 +12,8 @@ import glob
 import sys
 import re
 
-ymlFilePath = sys.argv[1]
+if(len(sys.argv) > 1):
+    ymlFilePath = sys.argv[1]
 N = 4
 
 # nom du fichier drawio final 
