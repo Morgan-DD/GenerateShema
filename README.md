@@ -121,7 +121,7 @@ Ex: `Password, 1245678, drowssaP, MyPassword, P_s_w_r_`
 Ex: `Password, 1245678, drowssaP, MyPassword, P_s_w_r_` 
 ---
 
->`rt_name:`nom du routeur, 2 lettres - 1 lettre(non obligatoire) 3 nombres - 2 lettres 1 nombre.   
+>`rt_name:`nom du routeur, 15 caractères de long.    
 Ex: `AB-C007-DE0, PO-K302-AL1, BA-M500-AA0, KF-K392-OP1` 
 ---
 
