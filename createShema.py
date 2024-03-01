@@ -84,54 +84,95 @@ idLongerLine = 0
 
 def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockList, baseFileValue):
 
-    width = (GetSize("space")[0]*2) + (getLineItemWidth(getItemOnALine(matrix, idLongerLine))) + (len(getItemOnALine(matrix, idLongerLine)) * GetSize("space")[1])
+    pageWidth = (GetSize("space")[0]*2) + (getLineItemWidth(getItemOnALine(matrix, idLongerLine))) + (len(getItemOnALine(matrix, idLongerLine)) * GetSize("space")[1])
     Hight = (GetSize("space")[0]*2) + GetSize(matrix[idHighestHightC][idHighestHightL][0])[1] + (len(matrix) * GetSize("space")[1])
     idLine = 0
     idItem = 0
     x = 0
     y = 0
     FinalBlock = ""
+    linkBlock = ""
     idItemAdd = 0
+    nbTrame = 0
+    print("width: " + str(pageWidth))
+    print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,")
 
     for matrixLine in matrix:
         lineTotalWidth = getLineItemWidth(getItemOnALine(matrix, idLine))
-        space = (width - lineTotalWidth)/(len(getItemOnALine(matrix, idLine))+1)
+        print("lineTotalWidth: " + str(lineTotalWidth))
+        space = (pageWidth - lineTotalWidth)/(len(getItemOnALine(matrix, idLine))+1)
         print("space: " + str(space))
+        print("withWithoutItems: " + str((pageWidth - lineTotalWidth)))
+        print("nbItem: " + str((len(getItemOnALine(matrix, idLine))+1)))
+        print("......")
         for matrixItem in matrixLine:
             if(matrixItem[0] != "trame"):
-                x = GetSize("space")[0] + space*idItem
+                x = GetSize("space")[0] + space*(idItem+1) - (GetSize("space")[0])
             else:
                 x = GetSize("space")[0]
             if(idLine > 0):
-                y = GetSize("space")[0] + GetSize("space")[1]*idLine + GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]
-#                print(findHighesItemOnLine(matrix[idLine-1]))
-#                print(str(GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]))
+                if(isATrameOnLineOnly(matrix[idLine-1])):
+                    nbTrame=nbTrame+1
+                y = GetSize("space")[0] + GetSize("space")[1]*(idLine-nbTrame) + getPreviousItemHight(matrix, idLine)
             else:
-                y = GetSize("space")[0] + GetSize("space")[1]*idLine
+                y = GetSize("space")[0]
+            if(idItem > 0):
+                print("idItem > 0")
+                x = GetSize("space")[0] + space*(idItem+1) + getPreviousItemLength(matrixLine, idItem) - (GetSize("space")[0])
             print("x: " + str(x))
-            print("y: " + str(GetSize("space")[0] + GetSize("space")[1]*idLine))
-            print("Y+: " + str(y) + ", " + str(GetSize(matrix[idLine-1][findHighesItemOnLine(matrix[idLine-1])][0])[1]))
-            print(matrixItem)
+            print("y: " + str(y))
             if(matrixItem[0] == "trame"):
-                FinalBlock = FinalBlock + replaceDataOnTrame(getValueOnFileContent(matrixItem[0], blockList)[1], "trame", x, y, width - (2*GetSize("space")[0]),idItemAdd)
+                print("width: " + str(pageWidth))
+                FinalBlock = FinalBlock + replaceDataOnTrame(getValueOnFileContent(matrixItem[0], blockList)[1], matrixItem[1], x, y, pageWidth - (2*GetSize("space")[0]),idItemAdd)
             else:
                 FinalBlock = FinalBlock + replaceDataOnComponent(getValueOnFileContent(matrixItem[0], blockList)[1], matrixItem[1], x, y,idItemAdd)
+            print(matrix[idLine][idItem])
+            print(matrix[idLine][idItem])
+            matrix[idLine][idItem].append([x,y])
+            print("oooooooooooooooooooooo")
             idItemAdd=idItemAdd+1
             idItem=idItem+1
         idLine=idLine+1
         idItem=0
-        print("----------------------------------------------")
+
+    displaySeparation()
+
+    idLine = 0
+    idItem = 0
+    for matrixLine in matrix:
+        for matrixItem in matrixLine:
+            print(matrixItem)
+            if(len(matrixItem) >= 5):
+                linkedToIds = matrixItem[3].replace("$link:", "")
+                linkedToIds.split(",")
+                for linkedToId in linkedToIds:
+                    linkedToItem = getObjectOnMatryById(matrix, int(linkedToId)-1)
+                    linkXY= linkedXY(matrixItem[-1][0], matrixItem[-1][0],idLine,getItemIdByLine(idLine,idItem,matrix),matrixItem[0], linkedToItem[-1][0], linkedToItem[-1][1],getObjectLineById(matrix,linkedToId),linkedToId,getObjectOnMatryById(matrix, linkedToId)[0])
+                    #print(linkXY)
+                    print("Depart:")
+                    print("x: " + str(linkXY[0][0]))
+                    print("y: " + str(linkXY[0][1]))
+                    print("Fin:")
+                    print("x: " + str(linkXY[1][0]))
+                    print("y: " + str(linkXY[1][1]))
+                    linkBlock=linkBlock+str(createLink(linkXY[0][0],linkXY[0][1],  blockList[-1][1], idItemAdd,linkXY[1][0],linkXY[1][1]))
+                    idItemAdd=idItemAdd+1
+            print("====================")
+            idItem=idItem+1
+        idLine=idLine+1
+        idItem=0
+    print("----------------------------------------------")
 
 
 
     # on ajoute notre liste de lien au shema mais au début car plus c'est au debut plus c'est en dessous donc les liens seront en dessous des icones
-    shemaContent = FinalBlock
+    shemaContent = linkBlock + FinalBlock
     # on ajoute nos formes au fichier de base
     baseFileValue = baseFileValue.replace("$REPLACEME", shemaContent)
     # on change la hauteur du shema
     baseFileValue = baseFileValue.replace("$Hight", str(Hight))
     # on change la largeur du shema
-    baseFileValue = baseFileValue.replace("$width", str(width))
+    baseFileValue = baseFileValue.replace("$width", str(pageWidth))
     # on ouvre le fichier de destination (sur le bureau) aprecu.drawio
     file = open(descktopPath, "w")
     # on ecris dans notre fichier le contenu
@@ -139,15 +180,104 @@ def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockLis
     # on ferme le fichier
     file.close
 
+def getItemIdByLine(idLineSearch, idItemSearch, matrix):
+    idLine = 0
+    idItem = 0
+    idItemTotal = 0
+    for line in matrix:
+        for item in line:
+            if(int(idLine) == int(idLineSearch) and int(idItem) == int(idItemSearch)):
+                return idItemTotal
+            idItemTotal=idItemTotal+1
+            idItem=idItem+1
+        idLine=idLine+1
+    return -1
 
-def findHighesItemOnLine(line):
+def getXY(item):
+    return item[-1]
+
+def linkedXY(startx, starty, startIdLine, startId, startItemId, finalx,finaly,finalIdLine, finalId, finalItemId):
+    print("o===============o")
+
+    if(startIdLine == finalIdLine):
+        print("meme ligne")
+        starty = starty + (GetSize(startItemId)[1])/2  - 25
+        finaly = starty
+        if(startItemId > finalItemId):
+            print("premier à droit")
+            print(GetSize(startItemId)[0])
+            startx = startx + GetSize(startItemId)[0] - GetSize("margin")
+            finalx = startx  + GetSize(finalItemId)[0] + GetSize("space")[0]
+        else:
+            print("premier à gauche")
+            finalx = finalx + GetSize(finalItemId)[0]
+            startx = startx
+    else:
+        startx=startx + (GetSize(startItemId)[0])/2
+        finalx=finalx + (GetSize(finalItemId)[0])/2
+        if(startIdLine < finalIdLine):
+            starty=starty+(GetSize(startItemId)[1])
+            finaly=finaly+(GetSize(finalItemId)[1])
+    print("startIdLine: " + str(startIdLine))
+    print("startx: " + str(startx))
+    print("starty: " + str(starty) + "\n")
+    print("finalIdLine: " + str(finalIdLine))
+    print("finalx: " + str(finalx))
+    print("finaly: " + str(finaly))
+    print("o===============o")
+    return[startx,starty],[finalx,finaly]
+
+def getObjectLineById(matrix, id):
+    idLine = 0
+    idItem = 0
+    for line in matrix:
+        for item in line:
+            if(int(idItem) == int(id)):
+                return idLine
+            idItem=idItem+1
+        idLine=idLine+1
+    return ""
+
+def getObjectOnMatryById(matrix, id):
+    idItem = 0
+    for line in matrix:
+        for item in line:
+            if(int(idItem) == int(id)):
+                return item
+            idItem=idItem+1
+    return ""
+
+def getHighesItemOnLine(line):
     highestItemId = 0
     idItem = 0
     for item in line:
         if (GetSize(item[0])[1] > GetSize(line[highestItemId][0])[1]):
           highestItemId = idItem
     idItem=idItem+1
-    return highestItemId
+    return GetSize(line[highestItemId][0])[1]
+
+def getPreviousItemLength(line, idItem):
+    idItemInLine = 0
+    totalWidth = 0
+    for item in line:
+        if(idItemInLine < idItem):
+            totalWidth=totalWidth+GetSize(item[0])[0]
+        idItemInLine=idItemInLine+1
+    return totalWidth
+
+def getPreviousItemHight(matrix, idLine):
+    idLineInMatrix = 0
+    totalHight = 0
+    isATrameVar = 0
+    for line in matrix:
+        if(isATrame(line[idItem][0]) and isATrameVar != 2):
+            isATrameVar = 1
+        else:
+            isATrameVar = 2
+        if(idLineInMatrix < idLine):
+            totalHight=totalHight+getHighesItemOnLine(line)
+        idLineInMatrix=idLineInMatrix+1
+    return totalHight
 
 def lineHasATrame(line):
     hasATrame = False
@@ -246,16 +376,13 @@ def createLinkToTrame(id, x, y, linkBlock, linkid,margin, direction, trameY):
 
 
 
-def createLink(id, x, y, width, Hight, linkBlock, linkid, finalX, finalY, finalId, direction):
-    startX = x + (GetSize(id)[0])/2
-    finalX = finalX + (GetSize(finalId)[0])/2
-    finalY = finalY + (GetSize(id)[1])/8
-    startY = y + GetSize(id)[1] - (GetSize(id)[1])/8
+def createLink(startX, startY, linkBlock, linkid, finalX, finalY):
     linkBlock = linkBlock.replace("$id", str(linkid))#id de la liaison
     linkBlock = linkBlock.replace("$xStart", str(startX))#id du début de la liaison(x) 
     linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
     linkBlock = linkBlock.replace("$xEnd", str(finalX))#id de la fin de la liaison(x) 
     linkBlock = linkBlock.replace("$yEnd", str(finalY))#id de la fin de la liaison(x) 
+    linkBlock = linkBlock.replace("$Aa", str(linkid))#id de la fin de la liaison(x) 
 
     return linkBlock
 
@@ -282,6 +409,7 @@ def GetSize(id):
     trameSize = [520,20]
     space = [25,50]
     trameSize = [0,50]
+    margin = 25
     match id:
             # si c'est le serveur
             case "server":
@@ -307,9 +435,12 @@ def GetSize(id):
             # si c'est le marges
             case "space":
                return space
-            # si c'est le marges
+            # si c'est uen trame
             case "trame":
-               return space
+               return trameSize
+        # si c'est le marges
+            case "margin":
+               return margin
             case _:
                 return 0
 
@@ -358,6 +489,14 @@ def isATrame(name):
         return True
     else:
         return False
+    
+def isATrameOnLineOnly(line):
+    for item in line:
+        print(item[0])
+        if(not isATrame(item[0])):
+            return False
+    return True
+
 
 def matchingDataWithId(data):
     match data:
@@ -489,7 +628,10 @@ else:
                 if(line[0] == "/line" or idLine == len(fileContent)-1):
                     addToMatrix = True
                 if(line[0] == "/link"):
-                    matrixLine[-1].append("$link:" + str(int(line[1])-1))
+                    links = ""
+                    for itemIdLink in line[1].split(","):
+                        links=links+str(int(itemIdLink)-1)
+                    matrixLine[-1].append("$link:" + str(links))
                 if(addToMatrix):
                     del matrixLine[0]
                     matrix.append(matrixLine)

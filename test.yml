@@ -14,16 +14,19 @@ recovery_password: 'Pa$$w0rd'     # AD recovery password, format: str(20)
 srv_name: 'DC'                    # Nom Proxmox du serveur, format: str(15)
 /link: 2
 cli_name: 'Cli1'                  # Nom du client, format: str(15)
-/link: 3
+/link: 3,4
+cli_name: 'Cli2'                  # Nom du client, format: str(15)
 /line                             # retour à la ligne
 srvappl_name: SRVAPPL01
-/link: 4           # Nom du serveur applicatif ou false si pas de serveur  
+/link: 5           # Nom du serveur applicatif ou false si pas de serveur  
 /line  
 bridge_netid: "167.19.1"          # NetID du reseau, format "1byte.1byte.1byte"
 bridge_id: 8
-/link: 5                        # id du bridge vmbr -> donnee qui est ajoutee en fin de playbook, l'utilisateur n'a pas besoin de fournir cet information
+/link: 6                        # id du bridge vmbr -> donnee qui est ajoutee en fin de playbook, l'utilisateur n'a pas besoin de fournir cet information
 /line  
 rt_name: 'VT-C003-RT4'            # Nom du routeur Mikrotik
 /line
 wan: CPNV
-/link: 5
+/link: 6
+/line
+bridge_netid: "167.19.2"
