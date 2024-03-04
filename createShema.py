@@ -94,17 +94,10 @@ def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockLis
     linkBlock = ""
     idItemAdd = 0
     nbTrame = 0
-    print("width: " + str(pageWidth))
-    print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,")
 
     for matrixLine in matrix:
         lineTotalWidth = getLineItemWidth(getItemOnALine(matrix, idLine))
-        print("lineTotalWidth: " + str(lineTotalWidth))
         space = (pageWidth - lineTotalWidth)/(len(getItemOnALine(matrix, idLine))+1)
-        print("space: " + str(space))
-        print("withWithoutItems: " + str((pageWidth - lineTotalWidth)))
-        print("nbItem: " + str((len(getItemOnALine(matrix, idLine))+1)))
-        print("......")
         for matrixItem in matrixLine:
             if(matrixItem[0] != "trame"):
                 x = GetSize("space")[0] + space*(idItem+1) - (GetSize("space")[0])
@@ -113,7 +106,7 @@ def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockLis
             if(idLine > 0):
                 if(isATrameOnLineOnly(matrix[idLine-1])):
                     nbTrame=nbTrame+1
-                y = GetSize("space")[0] + GetSize("space")[1]*(idLine-nbTrame) + getPreviousItemHight(matrix, idLine)
+                y = GetSize("space")[0] + GetSize("space")[1]*(idLine-nbTrame) + getPreviousItemHight(matrix, idLine) + (GetSize("space")[1]*(nbTrame))/1.5
             else:
                 y = GetSize("space")[0]
             if(idItem > 0):
@@ -127,7 +120,6 @@ def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockLis
             else:
                 FinalBlock = FinalBlock + replaceDataOnComponent(getValueOnFileContent(matrixItem[0], blockList)[1], matrixItem[1], x, y,idItemAdd)
             print(matrix[idLine][idItem])
-            print(matrix[idLine][idItem])
             matrix[idLine][idItem].append([x,y])
             print("oooooooooooooooooooooo")
             idItemAdd=idItemAdd+1
@@ -139,26 +131,40 @@ def DisplayList(matrix, idLongerLine, idHighestHightL, idHighestHightC, blockLis
 
     idLine = 0
     idItem = 0
+    idItemToal = 0
     for matrixLine in matrix:
         for matrixItem in matrixLine:
             print(matrixItem)
             if(len(matrixItem) >= 5):
                 linkedToIds = matrixItem[3].replace("$link:", "")
-                linkedToIds.split(",")
+                linkedToIds=linkedToIds.split(",")
+                linkedToIds=linkedToIds
+                print(linkedToIds)
                 for linkedToId in linkedToIds:
-                    linkedToItem = getObjectOnMatryById(matrix, int(linkedToId)-1)
-                    linkXY= linkedXY(matrixItem[-1][0], matrixItem[-1][0],idLine,getItemIdByLine(idLine,idItem,matrix),matrixItem[0], linkedToItem[-1][0], linkedToItem[-1][1],getObjectLineById(matrix,linkedToId),linkedToId,getObjectOnMatryById(matrix, linkedToId)[0])
+                    print(getObjectOnMatryById(matrix, linkedToId))
+                    linkedToId=int(linkedToId)-1
+                    linkedToItem = getObjectOnMatryById(matrix, int(linkedToId))
+                    linkXY= linkedXY(matrixItem[-1][0], matrixItem[-1][1],idLine,idItemToal,matrixItem[0], linkedToItem[-1][0], linkedToItem[-1][1],getObjectLineById(matrix,linkedToId),linkedToId,getObjectOnMatryById(matrix, linkedToId)[0])
                     #print(linkXY)
                     print("Depart:")
+                    print("id: " + str(matrixItem[2]))
                     print("x: " + str(linkXY[0][0]))
                     print("y: " + str(linkXY[0][1]))
                     print("Fin:")
                     print("x: " + str(linkXY[1][0]))
                     print("y: " + str(linkXY[1][1]))
-                    linkBlock=linkBlock+str(createLink(linkXY[0][0],linkXY[0][1],  blockList[-1][1], idItemAdd,linkXY[1][0],linkXY[1][1]))
+                    print("isAtrame= " + str(isATrame(getObjectOnMatryById(matrix, linkedToId)[0])))
+                    if(isATrame(getObjectOnMatryById(matrix, linkedToId)[0])):
+                        print("linked to a trame")
+                        linkBlock=linkBlock+str(createLinkToTrame(linkXY[0][0],linkXY[0][1], linkXY[1][1], blockList[-1][1], idItemAdd))
+                    elif(isATrame(matrixItem[0])):
+                        linkBlock=linkBlock+str(createLinkToTrame(linkXY[1][0],linkXY[1][1], linkXY[0][1], blockList[-1][1], idItemAdd))
+                    else:
+                        linkBlock=linkBlock+str(createLink(linkXY[0][0],linkXY[0][1], blockList[-1][1], idItemAdd,linkXY[1][0],linkXY[1][1]))
                     idItemAdd=idItemAdd+1
-            print("====================")
             idItem=idItem+1
+            idItemToal=idItemToal+1
+        print("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
         idLine=idLine+1
         idItem=0
     print("----------------------------------------------")
@@ -197,27 +203,37 @@ def getXY(item):
     return item[-1]
 
 def linkedXY(startx, starty, startIdLine, startId, startItemId, finalx,finaly,finalIdLine, finalId, finalItemId):
+    print("starty: " + str(starty))
     print("o===============o")
-
     if(startIdLine == finalIdLine):
         print("meme ligne")
-        starty = starty + (GetSize(startItemId)[1])/2  - 25
-        finaly = starty
-        if(startItemId > finalItemId):
+        starty = starty + (GetSize(startItemId)[1])/2
+        finaly = finaly + (GetSize(startItemId)[1])/2
+        if(startId > finalId):
             print("premier à droit")
             print(GetSize(startItemId)[0])
-            startx = startx + GetSize(startItemId)[0] - GetSize("margin")
+            startx = startx + GetSize("margin")
             finalx = startx  + GetSize(finalItemId)[0] + GetSize("space")[0]
         else:
             print("premier à gauche")
-            finalx = finalx + GetSize(finalItemId)[0]
-            startx = startx
-    else:
+            finalx = finalx + GetSize("margin")
+            startx = startx + GetSize(startItemId)[0] - GetSize("margin")
+    elif(startIdLine > finalIdLine):
+        print("au dessu")
         startx=startx + (GetSize(startItemId)[0])/2
         finalx=finalx + (GetSize(finalItemId)[0])/2
-        if(startIdLine < finalIdLine):
-            starty=starty+(GetSize(startItemId)[1])
-            finaly=finaly+(GetSize(finalItemId)[1])
+        starty=starty + GetSize("margin")
+        finaly=finaly+(GetSize(finalItemId)[1]) - GetSize("margin")
+    else:
+        print("au dessou")
+        startx = startx + GetSize(startItemId)[0]/2
+        finalx = finalx + GetSize(finalItemId)[0]/2
+        starty = starty + GetSize(startItemId)[1] - GetSize("margin")
+        finaly = finaly + GetSize("margin")
+    print("idStart: " + str(startId))
+    print("idFinal: " + str(finalId))
+    print("start type:" + str(startItemId))
+    print("final type:" + str(finalItemId))
     print("startIdLine: " + str(startIdLine))
     print("startx: " + str(startx))
     print("starty: " + str(starty) + "\n")
@@ -355,17 +371,8 @@ def getItemByLine(itemList, line):
         idItemOnList=idItemOnList+1
     return ids
 
-def createLinkToTrame(id, x, y, linkBlock, linkid,margin, direction, trameY):
-    if(direction):
-        startX=x + (GetSize(id)[0])/2
-        startY=y+ GetSize(id)[1] - (GetSize(id)[1]/10)
-        finalX= startX
-        finalY= trameY + (GetSize(id)[1]/5)
-    else:
-        startX=x + (GetSize(id)[0])/2
-        startY=y+ + (GetSize(id)[1]/10)
-        finalX= startX
-        finalY= trameY + GetSize("trame")[1] - (GetSize(id)[1]/5)
+def createLinkToTrame(startX, startY, finalY, linkBlock, linkid):
+    finalX = startX
     linkBlock = linkBlock.replace("$id", str(linkid))#id de la liaison
     linkBlock = linkBlock.replace("$xStart", str(startX))#id du début de la liaison(x) 
     linkBlock = linkBlock.replace("$yStart", str(startY))#id du début de la liaison(y)
@@ -408,8 +415,7 @@ def GetSize(id):
     wanSize = [118,79]
     trameSize = [520,20]
     space = [25,50]
-    trameSize = [0,50]
-    margin = 25
+    margin = 15
     match id:
             # si c'est le serveur
             case "server":
@@ -628,14 +634,11 @@ else:
                 if(line[0] == "/line" or idLine == len(fileContent)-1):
                     addToMatrix = True
                 if(line[0] == "/link"):
-                    links = ""
-                    for itemIdLink in line[1].split(","):
-                        links=links+str(int(itemIdLink)-1)
-                    matrixLine[-1].append("$link:" + str(links))
+                    matrixLine[-1].append("$link:" + str(line[1]))
                 if(addToMatrix):
                     del matrixLine[0]
                     matrix.append(matrixLine)
-                    addToMatrix = False
+                    addToMatrix = False 
                     matrixLine=["void"]
                 idLine=idLine+1
 

@@ -1,19 +1,28 @@
 daysuse: 1                        # nombre de jour d'utilisation
-project_name: 'Test13'            # prefix pour les vm du projet
-srv_name: 'DC'                    # Nom Proxmox du serveur, format: str(15)
-cli_name: 'Cli1'                  # Nom du client, format: str(15)
-srvappl_name: SRVAPPL01               # Nom du serveur applicatif ou false si pas de serveur  
-bridge_netid: "167.19.1"          # NetID du reseau, format "1byte.1byte.1byte"
-domain_name: 'domain.local'       # Nom du domaine format: domain.tlc
-domain_admin_password: 'Pa$$w0rd' # Admin password, format: str(20)
-recovery_password: 'Pa$$w0rd'     # AD recovery password, format: str(20)
-rt_name: 'VT-C003-RT4'            # Nom du routeur Mikrotik
-
 upn: ted                          # User UPN, format: str(15) 
 firstname: Ted                    # First name, format: str(15) 
 surname: Terance                  # surname, format: str(15) 
 display_name: Mr. Ted Johns       # display name, format: str(20) 
 user_password: 'Pa$$w0rd'         # User password, format: str(20)
 email: "Hommer.Simpson@Land.TV"   # email de la personne a contacter pour envoyer les info
-bridge_id: 8                      # id du bridge vmbr -> donnee qui est ajoutee en fin de playbook, l'utilisateur n'a pas besoin de fournir cet information
-wan_ip: 123.1.1.3             # Adresse ip du cote wan optenue par DHCP -> donnee qui est ajoutee en fin de playbook, l'utilisateur n'a pas besoin de fournir cet information
+wan_ip: 123.1.1.3                 # Adresse ip du cote wan optenue par DHCP -> donnee qui est ajoutee en fin de playbook, l'utilisateur n'a pas besoin de fournir cet information
+project_name: 'Test13'            # prefix pour les vm du projet
+domain_name: 'domain.local'       # Nom du domaine format: domain.tlc
+domain_admin_password: 'Pa$$w0rd' # Admin password, format: str(20)
+recovery_password: 'Pa$$w0rd'     # AD recovery password, format: str(20)
+
+srv_name: 'DC'                    # Nom Proxmox du serveur, format: str(15)
+/link: 4
+cli_name: 'Cli1'                  # Nom du client, format: str(15)
+/link: 4                        
+srvappl_name: SRVAPPL01
+/link: 4           # Nom du serveur applicatif ou false si pas de serveur  
+/line  
+bridge_netid: "167.19.1"          # NetID du reseau, format "1byte.1byte.1byte"
+bridge_id: 8
+/line  
+rt_name: 'VT-C003-RT4'            # Nom du routeur Mikrotik
+/link: 4
+/line
+wan: CPNV
+/link: 5

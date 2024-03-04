@@ -16,6 +16,7 @@ srv_name: 'DC'                    # Nom Proxmox du serveur, format: str(15)
 cli_name: 'Cli1'                  # Nom du client, format: str(15)
 /link: 3,4
 cli_name: 'Cli2'                  # Nom du client, format: str(15)
+/link: 4
 /line                             # retour à la ligne
 srvappl_name: SRVAPPL01
 /link: 5           # Nom du serveur applicatif ou false si pas de serveur  
@@ -30,3 +31,4 @@ wan: CPNV
 /link: 6
 /line
 bridge_netid: "167.19.2"
+/link: 6
