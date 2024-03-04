@@ -32,3 +32,4 @@ wan: CPNV
 /line
 bridge_netid: "167.19.2"
 /link: 6
+bridge_id: 199

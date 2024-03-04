@@ -29,7 +29,7 @@ firewall!
 </mxCell>
 |
 wan!
-<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="$name" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#BBBDBF;fillColor=#BBBDBF;" parent="1" vertex="1">
+<mxCell id="CzhUVdDzg0eim9fdnS6T-$id" value="WAN" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#BBBDBF;fillColor=#BBBDBF;" parent="1" vertex="1">
 	<mxGeometry x="$x" y="$y" width="118" height="79" as="geometry" />
 </mxCell>
 |
@@ -37,6 +37,9 @@ dataArray!
 <mxCell id="517VE_qYMI2_XEnBqmq--$id" value="&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;Domaine: $domainName&lt;br&gt;Utilisateur UPN: $user&lt;br&gt;Nom user UPN: $name&lt;br&gt;Prenom user UPN: $firstName&lt;br&gt;nom affiché: $displayName&lt;br&gt;&lt;/font&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;email: $email&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#BBBDBF;align=left;" vertex="1" parent="1">
 	<mxGeometry y="$y" width="220" height="139" as="geometry" />
 </mxCell>
+|
+returnLine!
+&lt;br&gt;
 |
 textArea!
 <mxCell id="HvnhqOtdIRZlXM9Dbx3Z-$id" value="&lt;font style=&quot;font-size: $fontSizepx;&quot;&gt;$text&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
